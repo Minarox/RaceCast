@@ -1,16 +1,21 @@
 <template>
   <main>
     <Status />
+    <section>
+      <OpenLayers />
+    </section>
   </main>
 </template>
 
 <script>
 import Status from "@/components/Status.vue";
+import OpenLayers from "@/components/OpenLayers.vue";
 
 export default {
   name: "App",
   components: {
     Status,
+    OpenLayers,
   },
 };
 </script>

@@ -37,8 +37,6 @@
         <li><a href="#deploy">Deploy</a></li>
       </ul>
     </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#feedback">Feedback</a></li>
     <li><a href="#author">Author</a></li>
   </ol>
 </details>

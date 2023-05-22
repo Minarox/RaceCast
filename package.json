@@ -23,7 +23,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
-    "@intlify/vue-i18n-loader": "^3.0.0",
+    "@intlify/vue-i18n-loader": "^4.2.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-pwa": "~5.0.0",
@@ -34,7 +34,7 @@
     "eslint-plugin-vue": "^9.13.0",
     "prettier": "^2.4.1",
     "sass": "^1.32.7",
-    "sass-loader": "^13.2.2",
+    "sass-loader": "^13.3.0",
     "vue-cli-plugin-i18n": "~2.3.2"
   },
   "bugs": {

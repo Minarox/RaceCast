@@ -13,7 +13,7 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     labels:
-      - "dependencies"
+      - "dependencie"
 
   # Maintain dependencies for npm
   - package-ecosystem: "npm" # See documentation for possible values
@@ -23,4 +23,4 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     labels:
-      - "dependencies"
+      - "dependencie"

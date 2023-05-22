@@ -39,7 +39,6 @@ export default {
 header {
   background-color: white;
   border-radius: var(--border-radius);
-  margin-bottom: 1rem;
   margin-inline: auto;
   min-width: max-content;
   padding: 1rem;

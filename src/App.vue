@@ -1,5 +1,7 @@
 <template>
-  <Status />
+  <main>
+    <Status />
+  </main>
 </template>
 
 <script>
@@ -33,5 +35,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   padding: 1rem;
   width: 100vw;
+
+  main {
+    align-items: center;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
 }
 </style>

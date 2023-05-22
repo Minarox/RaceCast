@@ -1,3 +1,11 @@
 {
-  "message": "hello i18n!"
+  "disconnected": "Not connected to the server",
+  "system": {
+    "connected": "System connected",
+    "disconnected": "System disconnected"
+  },
+  "shutter": {
+    "record": "Recording in progress...",
+    "standby": "Standby"
+  }
 }

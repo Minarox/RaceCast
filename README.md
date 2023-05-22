@@ -37,8 +37,6 @@
         <li><a href="#deploy">Deploy</a></li>
       </ul>
     </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#feedback">Feedback</a></li>
     <li><a href="#author">Author</a></li>
   </ol>
 </details>
@@ -49,6 +47,9 @@ User interface gathering the information and the video stream returned by the on
 
 ### Features
 
+- User connection status
+- System connection status with latency
+- Shutter status of the camera
 - [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
 ### Tech Stack

@@ -49,6 +49,9 @@ User interface gathering the information and the video stream returned by the on
 
 ### Features
 
+- User connection status
+- System connection status with latency
+- Shutter status of the camera
 - [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
 ### Tech Stack

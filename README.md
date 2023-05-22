@@ -59,6 +59,7 @@ User interface gathering the information and the video stream returned by the on
     - [EsLint](https://eslint.org/)
     - [Prettier](https://prettier.io/)
     - [Register Service Worker](https://www.npmjs.com/package/register-service-worker)
+- [Socket.io](https://socket.io/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -74,17 +75,21 @@ User interface gathering the information and the video stream returned by the on
 ```
 
 ### Start development server
+
 - Install dependencies
+
 ````bash
   npm install
 ````
 
 - Lint and fix files
+
 ````bash
   npm run lint
 ````
 
 - Start development server
+
 ````bash
   npm run serve
 ````
@@ -92,10 +97,13 @@ User interface gathering the information and the video stream returned by the on
 - Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
 
 ### Deploy
+
 - Build for production
+
 ````bash
   npm run build
 ````
+
 - The website is now in the `dist` folder ready to be deployed.
 
 <p align="right">(<a href="#top">back to top</a>)</p>

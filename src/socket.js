@@ -17,7 +17,11 @@ export const state = reactive({
 const URL =
   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-export const socket = io(URL);
+export const socket = io(URL, {
+  reconnectionDelay: 400,
+  reconnectionDelayMax: 400,
+  retries: Infinity,
+});
 
 socket.on("connect", () => {
   console.log("connected");

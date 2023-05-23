@@ -1,8 +1,9 @@
 <template>
-  <div ref="map-root" style="width: 100%; height: 100%"></div>
+  <div ref="map" style="width: 100%; height: 100%" />
 </template>
 
 <script>
+import { state } from "@/socket";
 import { Feature, Map, View } from "ol/index";
 import { OSM, Vector as VectorSource } from "ol/source";
 import { Point } from "ol/geom";
@@ -14,50 +15,135 @@ import {
   ScaleLine,
 } from "ol/control.js";
 import "ol/ol.css";
+import { Circle as CircleStyle, Stroke, Style } from "ol/style.js";
+import { easeOut } from "ol/easing.js";
+import { getVectorContext } from "ol/render.js";
+import { unByKey } from "ol/Observable.js";
 
 export default {
   name: "OpenLayersComponent",
+  computed: {
+    location() {
+      return state.location;
+    },
+  },
   data() {
     return {
       map: null,
-      place: [2.3488, 48.8534],
+      tileLayer: null,
+      source: null,
+      vector: null,
+      duration: 3000,
+      start: null,
+      flashGeom: null,
+      listenerKey: null,
+      interval: null,
     };
   },
   mounted() {
     useGeographic();
-
     this.createMap();
+
+    this.flash();
+    this.interval = setInterval(() => {
+      this.flash();
+    }, 3000);
+  },
+  beforeUnmount() {
+    clearInterval(this.interval);
   },
   methods: {
     createMap() {
-      this.map = new Map({
-        target: this.$refs["map-root"],
-        controls: defaultControls({ attribution: false, zoom: true }).extend([
-          new ScaleLine(),
-          new FullScreen(),
-        ]),
-        layers: [
-          new TileLayer({
-            source: new OSM(),
-          }),
-          new VectorLayer({
-            source: new VectorSource({
-              features: [new Feature(new Point(this.place))],
-            }),
-            style: {
-              "circle-radius": 8,
-              "circle-fill-color": "red",
-            },
-          }),
-        ],
-        view: new View({
-          center: this.place,
-          zoom: 15,
-          constrainResolution: false,
-          constrainOnlyCenter: false,
-          constrainRotation: false,
+      this.tileLayer = new TileLayer({
+        source: new OSM({
+          wrapX: false,
         }),
       });
+
+      this.source = new VectorSource({
+        wrapX: false,
+        features: [new Feature(new Point(this.location))],
+      });
+
+      this.vector = new VectorLayer({
+        source: this.source,
+        style: {
+          "circle-radius": 12,
+          "circle-fill-color": "rgba(255,255,255,0.6)",
+          "circle-stroke-color": "#3399CC",
+          "circle-stroke-width": 1.8,
+        },
+      });
+
+      this.map = new Map({
+        target: this.$refs.map,
+        controls: defaultControls({ attribution: false, zoom: true }).extend([
+          new ScaleLine({
+            units: "metric",
+          }),
+          new FullScreen(),
+        ]),
+        layers: [this.tileLayer, this.vector],
+        view: new View({
+          center: this.location,
+          zoom: 15,
+        }),
+      });
+    },
+    flash() {
+      this.start = Date.now();
+      this.flashGeom = this.map
+        .getLayers()
+        .getArray()[1]
+        .getSource()
+        .getFeatures()[0]
+        .getGeometry()
+        .clone();
+      this.listenerKey = this.tileLayer.on("postrender", this.animate);
+    },
+    animate(event) {
+      const frameState = event.frameState;
+      const elapsed = frameState.time - this.start;
+      if (elapsed >= this.duration) {
+        unByKey(this.listenerKey);
+        return;
+      }
+      const vectorContext = getVectorContext(event);
+      const elapsedRatio = elapsed / this.duration;
+      // radius will be 8 at start and 30 at end.
+      const radius = easeOut(elapsedRatio) * 25 + 12;
+      const opacity = easeOut(1 - elapsedRatio);
+
+      const style = new Style({
+        image: new CircleStyle({
+          radius: radius,
+          stroke: new Stroke({
+            color: "rgba(255, 0, 0, " + opacity + ")",
+            width: 0.25 + opacity,
+          }),
+        }),
+      });
+
+      vectorContext.setStyle(style);
+      vectorContext.drawGeometry(this.flashGeom);
+      this.map.render();
+    },
+  },
+  watch: {
+    location(position) {
+      this.map
+        .getLayers()
+        .getArray()[1]
+        .getSource()
+        .getFeatures()[0]
+        .getGeometry()
+        .setCoordinates(position);
+      setTimeout(() => {
+        this.map.getView().animate({
+          center: position,
+          duration: 300,
+        });
+      }, 1);
     },
   },
 };

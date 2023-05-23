@@ -8,7 +8,7 @@ export const state = reactive({
   gyroscope: null,
   speed: null,
   temperature: null,
-  location: null,
+  location: [2.213749, 46.227638],
   shutter: false,
   ping: null,
 });

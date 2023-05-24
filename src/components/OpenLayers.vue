@@ -1,5 +1,5 @@
 <template>
-  <div ref="map" style="width: 100%; height: 100%" />
+  <section ref="map" />
 </template>
 
 <script>
@@ -150,8 +150,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-div {
-  height: 300px !important;
-  width: 400px !important;
+section {
+  height: 400px;
+  width: 300px;
 }
 </style>

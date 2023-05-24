@@ -64,13 +64,9 @@ socket.on("ping", (value) => {
 
 socket.on("offline", () => {
   state.online = false;
-  state.shutter = false;
-  state.ping = null;
 });
 
 socket.on("disconnect", () => {
   state.connected = false;
   state.online = false;
-  state.shutter = false;
-  state.ping = null;
 });

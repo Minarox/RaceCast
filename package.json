@@ -45,7 +45,7 @@
   },
   "engineStrict": false,
   "engines": {
-    "node": ">=14.0.0 <=20",
+    "node": ">=14.0.0",
     "npm": ">=6.0.0"
   },
   "homepage": "https://github.com/RaceCast/Interface#readme",

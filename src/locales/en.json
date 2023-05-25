@@ -9,5 +9,6 @@
     "standby": "Standby"
   },
   "map": "Map",
-  "speed": "Speed"
+  "speed": "Speed",
+  "temperature": "Temperature"
 }

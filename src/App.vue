@@ -4,6 +4,7 @@
     <div>
       <Stream />
       <OpenLayers />
+      <Speed />
     </div>
   </main>
 </template>
@@ -12,6 +13,7 @@
 import Status from "@/components/Status.vue";
 import Stream from "@/components/Stream.vue";
 import OpenLayers from "@/components/OpenLayers.vue";
+import Speed from "@/components/Speed.vue";
 
 export default {
   name: "App",
@@ -19,6 +21,7 @@ export default {
     Status,
     Stream,
     OpenLayers,
+    Speed,
   },
 };
 </script>

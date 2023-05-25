@@ -1,6 +1,6 @@
 <template>
   <section>
-    <Heading title="Carte" />
+    <Heading :title="$t('map')" />
     <div id="map" ref="map" />
   </section>
 </template>

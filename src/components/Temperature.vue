@@ -1,7 +1,7 @@
 <template>
   <section>
-    <Heading :title="$t('speed')" />
-    <p>{{ speed }} km/h</p>
+    <Heading :title="$t('temperature')" />
+    <p>{{ temperature }} °C</p>
   </section>
 </template>
 
@@ -10,13 +10,13 @@ import { state } from "@/socket";
 import Heading from "@/components/Heading.vue";
 
 export default {
-  name: "SpeedComponent",
+  name: "TemperatureComponent",
   components: {
     Heading,
   },
   computed: {
-    speed() {
-      return state.speed;
+    temperature() {
+      return state.temperature;
     },
   },
 };

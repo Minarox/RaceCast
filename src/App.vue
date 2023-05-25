@@ -5,6 +5,7 @@
       <Stream />
       <OpenLayers />
       <Speed />
+      <Temperature />
     </div>
   </main>
 </template>
@@ -14,6 +15,7 @@ import Status from "@/components/Status.vue";
 import Stream from "@/components/Stream.vue";
 import OpenLayers from "@/components/OpenLayers.vue";
 import Speed from "@/components/Speed.vue";
+import Temperature from "@/components/Temperature.vue";
 
 export default {
   name: "App",
@@ -22,6 +24,7 @@ export default {
     Stream,
     OpenLayers,
     Speed,
+    Temperature,
   },
 };
 </script>
@@ -58,7 +61,7 @@ body {
     > div {
       align-items: center;
       display: flex;
-      flex-flow: row nowrap;
+      flex-flow: row wrap;
       gap: 1rem;
       justify-content: flex-start;
     }

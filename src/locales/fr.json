@@ -9,5 +9,6 @@
     "standby": "En attente"
   },
   "map": "Carte",
-  "speed": "Vitesse"
+  "speed": "Vitesse",
+  "temperature": "Température"
 }

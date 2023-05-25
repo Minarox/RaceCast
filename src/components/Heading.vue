@@ -1,35 +1,16 @@
 <template>
-  <header :class="connected ? 'green-border' : 'red-border'">
-    <p v-if="!connected">{{ $t("disconnected") }}</p>
-    <div v-else>
-      <p>
-        <span v-if="online">{{ $t("system.connected") }}</span>
-        <span v-else>{{ $t("system.disconnected") }}</span>
-        <span v-if="ping"> ({{ ping }} ms)</span>
-      </p>
-      <p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>
-      <p v-else>{{ $t("shutter.standby") }}</p>
-    </div>
+  <header>
+    <p>{{ title }}</p>
   </header>
 </template>
 
 <script>
-import { state } from "@/socket";
-
 export default {
-  name: "StatusComponent",
-  computed: {
-    connected() {
-      return state.connected;
-    },
-    online() {
-      return state.online;
-    },
-    ping() {
-      return state.ping;
-    },
-    shutter() {
-      return state.shutter;
+  name: "TitleComponent",
+  props: {
+    title: {
+      type: String,
+      required: true,
     },
   },
 };
@@ -38,12 +19,10 @@ export default {
 <style lang="scss" scoped>
 header {
   background-color: white;
-  border-radius: var(--border-radius);
-  margin-inline: auto;
-  min-width: max-content;
-  padding: 1.3rem;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  padding: 0.9rem;
   text-align: center;
-  width: 80%;
+  width: 100%;
 
   div {
     align-items: center;

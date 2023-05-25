@@ -24,12 +24,10 @@ export const socket = io(URL, {
 });
 
 socket.on("connect", () => {
-  console.log("connected");
   state.connected = true;
 });
 
 socket.on("online", () => {
-  console.log("online");
   state.online = true;
 });
 
@@ -50,7 +48,7 @@ socket.on("temperature", (value) => {
 });
 
 socket.on("location", (data) => {
-  state.location = data;
+  state.location = [data.longitude, data.latitude];
 });
 
 socket.on("shutter", (boolean) => {
@@ -58,7 +56,6 @@ socket.on("shutter", (boolean) => {
 });
 
 socket.on("ping", (value) => {
-  console.log("ping:", value);
   state.ping = value;
 });
 

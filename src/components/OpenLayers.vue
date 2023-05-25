@@ -1,9 +1,13 @@
 <template>
-  <section ref="map" />
+  <section>
+    <Heading title="Carte" />
+    <div id="map" ref="map" />
+  </section>
 </template>
 
 <script>
 import { state } from "@/socket";
+import Heading from "@/components/Heading.vue";
 import { Feature, Map, View } from "ol/index";
 import { OSM, Vector as VectorSource } from "ol/source";
 import { Point } from "ol/geom";
@@ -14,14 +18,17 @@ import {
   FullScreen,
   ScaleLine,
 } from "ol/control.js";
-import "ol/ol.css";
 import { Circle as CircleStyle, Stroke, Style } from "ol/style.js";
 import { easeOut } from "ol/easing.js";
 import { getVectorContext } from "ol/render.js";
 import { unByKey } from "ol/Observable.js";
+import "ol/ol.css";
 
 export default {
   name: "OpenLayersComponent",
+  components: {
+    Heading,
+  },
   computed: {
     location() {
       return state.location;
@@ -151,7 +158,18 @@ export default {
 
 <style lang="scss" scoped>
 section {
-  height: 400px;
-  width: 300px;
+  align-items: center;
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-flow: column nowrap;
+  height: 480px;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 400px;
+
+  #map {
+    height: 100%;
+    width: 100%;
+  }
 }
 </style>

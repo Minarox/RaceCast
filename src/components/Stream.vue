@@ -13,16 +13,20 @@ export default {
 <style lang="scss" scoped>
 section {
   align-items: center;
+  background-color: lightgrey;
   border-radius: var(--border-radius);
-  display: inline-flex;
-  height: 480px;
+  display: flex;
   justify-content: center;
   overflow: hidden;
-  width: 852px;
+  position: relative;
 
   video {
+    bottom: 0;
     height: 100%;
-    object-fit: cover;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
     width: 100%;
   }
 }

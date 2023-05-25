@@ -31,7 +31,7 @@ section {
   flex-flow: column nowrap;
   justify-content: flex-start;
   overflow: hidden;
-  width: 400px;
+  width: 260px;
 
   > p {
     font-size: 1.6em;

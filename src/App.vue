@@ -1,20 +1,23 @@
 <template>
   <main>
     <Status />
-    <section>
+    <div>
+      <Stream />
       <OpenLayers />
-    </section>
+    </div>
   </main>
 </template>
 
 <script>
 import Status from "@/components/Status.vue";
+import Stream from "@/components/Stream.vue";
 import OpenLayers from "@/components/OpenLayers.vue";
 
 export default {
   name: "App",
   components: {
     Status,
+    Stream,
     OpenLayers,
   },
 };
@@ -38,6 +41,7 @@ body {
   -webkit-font-smoothing: antialiased;
   height: 100vh;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
   padding: 1rem;
   width: 100vw;
 
@@ -47,6 +51,14 @@ body {
     flex-flow: column nowrap;
     gap: 1rem;
     justify-content: flex-start;
+
+    > div {
+      align-items: center;
+      display: flex;
+      flex-flow: row nowrap;
+      gap: 1rem;
+      justify-content: flex-start;
+    }
   }
 }
 </style>

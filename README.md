@@ -53,6 +53,7 @@ User interface gathering the information and the video stream returned by the on
 - GPS location of the car
 - Speed of the car
 - Temperature of the car's interior
+- Speed history graph
 - [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
 ### Tech Stack
@@ -65,6 +66,7 @@ User interface gathering the information and the video stream returned by the on
     - [Register Service Worker](https://www.npmjs.com/package/register-service-worker)
 - [Socket.io](https://socket.io/)
 - [OpenLayers](https://openlayers.org/)
+- [Chart.js](https://www.chartjs.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

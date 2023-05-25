@@ -159,13 +159,13 @@ export default {
 <style lang="scss" scoped>
 section {
   align-items: center;
+  background-color: #f6f6f6;
   border-radius: var(--border-radius);
   display: flex;
   flex-flow: column nowrap;
-  height: 480px;
+  height: 100%;
   justify-content: flex-start;
   overflow: hidden;
-  width: 400px;
 
   #map {
     height: 100%;

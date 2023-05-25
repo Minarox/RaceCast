@@ -7,5 +7,7 @@
   "shutter": {
     "record": "Enregistrement en cours...",
     "standby": "En attente"
-  }
+  },
+  "map": "Carte",
+  "speed": "Vitesse"
 }

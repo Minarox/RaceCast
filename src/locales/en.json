@@ -7,5 +7,7 @@
   "shutter": {
     "record": "Recording in progress...",
     "standby": "Standby"
-  }
+  },
+  "map": "Map",
+  "speed": "Speed"
 }

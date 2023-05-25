@@ -6,8 +6,8 @@ export const state = reactive({
   online: false,
   acceleration: null,
   gyroscope: null,
-  speed: null,
-  temperature: null,
+  speed: 0.0,
+  temperature: 0.0,
   location: [2.213749, 46.227638],
   shutter: false,
   ping: null,
@@ -18,8 +18,9 @@ const URL =
   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
 export const socket = io(URL, {
-  reconnectionDelay: 400,
-  reconnectionDelayMax: 400,
+  reconnectionDelay: 300,
+  reconnectionDelayMax: 300,
+  timeout: 300,
   retries: Infinity,
 });
 
@@ -44,6 +45,7 @@ socket.on("speed", (value) => {
 });
 
 socket.on("temperature", (value) => {
+  console.log("temperature:", value);
   state.temperature = value;
 });
 

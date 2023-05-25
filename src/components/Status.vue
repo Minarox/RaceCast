@@ -41,7 +41,7 @@ header {
   border-radius: var(--border-radius);
   margin-inline: auto;
   min-width: max-content;
-  padding: 1rem;
+  padding: 1.3rem;
   text-align: center;
   width: 80%;
 

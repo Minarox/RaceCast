@@ -10,5 +10,8 @@
   },
   "map": "Carte",
   "speed": "Vitesse",
-  "temperature": "Température"
+  "temperature": "Température",
+  "inertial": "Centrale inertielle",
+  "accelerometer": "Accéléromètre",
+  "gyroscope": "Gyroscope"
 }

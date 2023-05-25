@@ -10,5 +10,8 @@
   },
   "map": "Map",
   "speed": "Speed",
-  "temperature": "Temperature"
+  "temperature": "Temperature",
+  "inertial": "Inertial measurement system",
+  "accelerometer": "Accelerometer",
+  "gyroscope": "Gyroscope"
 }

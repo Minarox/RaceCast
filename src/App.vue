@@ -1,12 +1,17 @@
 <template>
+  <Status />
   <main>
-    <Status />
-    <div>
+    <section>
       <Stream />
-      <OpenLayers />
+      <div>
+        <OpenLayers />
+        <Temperature />
+      </div>
+    </section>
+    <section>
       <Speed />
-      <Temperature />
-    </div>
+      <Inertial />
+    </section>
   </main>
 </template>
 
@@ -14,8 +19,9 @@
 import Status from "@/components/Status.vue";
 import Stream from "@/components/Stream.vue";
 import OpenLayers from "@/components/OpenLayers.vue";
-import Speed from "@/components/Speed.vue";
 import Temperature from "@/components/Temperature.vue";
+import Speed from "@/components/Speed.vue";
+import Inertial from "@/components/Inertial.vue";
 
 export default {
   name: "App",
@@ -23,8 +29,9 @@ export default {
     Status,
     Stream,
     OpenLayers,
-    Speed,
     Temperature,
+    Speed,
+    Inertial,
   },
 };
 </script>
@@ -40,6 +47,20 @@ export default {
   padding: 0;
 }
 
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: solid 4px transparent;
+  border-radius: 14px;
+  box-shadow: inset 0 0 14px 14px black;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
 body {
   background-color: #eeeeee;
   color: black;
@@ -51,19 +72,37 @@ body {
   padding: 1rem;
   width: 100vw;
 
-  main {
-    align-items: center;
+  #app {
     display: flex;
     flex-flow: column nowrap;
     gap: 1rem;
-    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
 
-    > div {
-      align-items: center;
-      display: flex;
-      flex-flow: row wrap;
-      gap: 1rem;
-      justify-content: flex-start;
+    main {
+      display: grid;
+      grid-gap: 1rem;
+      grid-template-rows: 1.4fr 0.6fr;
+      height: 100%;
+      width: 100%;
+
+      > section {
+        display: grid;
+        grid-gap: 1rem;
+        grid-template-columns: 1.3fr 0.7fr;
+
+        &:last-of-type {
+          grid-template-columns: 1.2fr 0.8fr;
+        }
+
+        > div {
+          align-items: center;
+          display: grid;
+          flex-flow: column nowrap;
+          grid-gap: 1rem;
+          grid-template-rows: 1fr auto;
+        }
+      }
     }
   }
 }

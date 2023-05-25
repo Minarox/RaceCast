@@ -1,23 +1,20 @@
 <template>
   <section>
-    <Heading :title="$t('temperature')" />
-    <p>{{ temperature }} °C</p>
+    <Heading :title="$t('inertial')" />
+    <div>
+      <p>{{ $t("accelerometer") }}</p>
+      <p>{{ $t("gyroscope") }}</p>
+    </div>
   </section>
 </template>
 
 <script>
-import { state } from "@/socket";
 import Heading from "@/components/Heading.vue";
 
 export default {
-  name: "TemperatureComponent",
+  name: "InertialComponent",
   components: {
     Heading,
-  },
-  computed: {
-    temperature() {
-      return state.temperature;
-    },
   },
 };
 </script>
@@ -29,12 +26,18 @@ section {
   border-radius: var(--border-radius);
   display: flex;
   flex-flow: column nowrap;
+  height: 100%;
   justify-content: flex-start;
   overflow: hidden;
 
-  > p {
-    font-size: 1.6em;
-    padding: 0.9rem;
+  > div {
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    height: 100%;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
   }
 }
 </style>

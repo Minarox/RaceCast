@@ -9,7 +9,8 @@
 <h3 align="center">Interface</h3>
 
 ![Project Version](https://img.shields.io/github/package-json/v/RaceCast/Interface?label=Version)&nbsp;
-![Project License](https://img.shields.io/github/license/RaceCast/Interface?label=Licence)
+![Project License](https://img.shields.io/github/license/RaceCast/Interface?label=Licence)&nbsp;
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/RaceCast/Interface/node.js.yml?label=Build)
 
   <p align="center">
     User interface for displaying race car data.

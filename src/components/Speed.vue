@@ -2,7 +2,7 @@
   <section>
     <Heading :title="$t('speed')" />
     <div>
-      <div>
+      <div class="chart-container">
         <canvas id="speed-chart" />
       </div>
       <p>{{ speed }} km/h</p>
@@ -149,12 +149,6 @@ section {
     height: 100%;
     justify-content: center;
     width: 100%;
-
-    > div {
-      height: 100%;
-      position: relative;
-      width: 100%;
-    }
 
     > p {
       font-size: 1.6em;

@@ -45,7 +45,6 @@ socket.on("speed", (value) => {
 });
 
 socket.on("temperature", (value) => {
-  console.log("temperature:", value);
   state.temperature = value;
 });
 

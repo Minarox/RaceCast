@@ -5,10 +5,12 @@
       <p>
         <span v-if="online">{{ $t("system.connected") }}</span>
         <span v-else>{{ $t("system.disconnected") }}</span>
-        <span v-if="ping"> ({{ ping }} ms)</span>
+        <span v-if="ping && online"> ({{ ping }} ms)</span>
       </p>
-      <p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>
-      <p v-else>{{ $t("shutter.standby") }}</p>
+      <p v-if="shutter && online" id="shutter">
+        <span />{{ $t("shutter.record") }}
+      </p>
+      <p v-else-if="online">{{ $t("shutter.standby") }}</p>
     </div>
   </header>
 </template>

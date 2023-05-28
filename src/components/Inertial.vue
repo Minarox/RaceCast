@@ -26,29 +26,44 @@ export default {
     },
   },
   data() {
-    return {
-      accelChart: {
-        chart: {
-          height: null,
-          spacing: [10, 0, 0, 0],
-          backgroundColor: "transparent",
-          type: "scatter3d",
-          options3d: {
-            enabled: true,
-            alpha: 6,
-            beta: 16,
-            depth: 400,
+    const options = {
+      chart: {
+        height: null,
+        spacing: [10, 0, 0, 0],
+        backgroundColor: "transparent",
+        type: "scatter3d",
+        options3d: {
+          enabled: true,
+          alpha: 10,
+          beta: 20,
+          depth: 400,
+        },
+      },
+      lang: {
+        noData: this.$t("no_data"),
+      },
+      credits: {
+        enabled: false,
+      },
+      legend: {
+        enabled: false,
+      },
+      plotOptions: {
+        series: {
+          marker: {
+            radius: 6,
           },
         },
-        lang: {
-          noData: this.$t("no_data"),
-        },
-        credits: {
-          enabled: false,
-        },
-        legend: {
-          enabled: false,
-        },
+      },
+    };
+    const origin = {
+      name: "origin",
+      data: [[0, 0, 0]],
+      color: "#888888",
+    };
+    return {
+      accelChart: {
+        ...options,
         title: {
           text: this.$t("accelerometer"),
         },
@@ -67,48 +82,17 @@ export default {
           max: 3,
           showFirstLabel: false,
         },
-        plotOptions: {
-          series: {
-            marker: {
-              radius: 6,
-            },
-          },
-        },
         series: [
           {
             name: "data",
             data: [[0, 0, 0]],
             color: "#FF0000",
           },
-          {
-            name: "origin",
-            data: [[0, 0, 0]],
-            color: "#888888",
-          },
+          origin,
         ],
       },
       gyroChart: {
-        chart: {
-          height: null,
-          spacing: [10, 0, 0, 0],
-          backgroundColor: "transparent",
-          type: "scatter3d",
-          options3d: {
-            enabled: true,
-            alpha: 6,
-            beta: 16,
-            depth: 400,
-          },
-        },
-        lang: {
-          noData: this.$t("no_data"),
-        },
-        credits: {
-          enabled: false,
-        },
-        legend: {
-          enabled: false,
-        },
+        ...options,
         title: {
           text: this.$t("gyroscope"),
         },
@@ -127,24 +111,13 @@ export default {
           max: 3,
           showFirstLabel: false,
         },
-        plotOptions: {
-          series: {
-            marker: {
-              radius: 6,
-            },
-          },
-        },
         series: [
           {
             name: "data",
             data: [[0, 0, 0]],
             color: "#FF0000",
           },
-          {
-            name: "origin",
-            data: [[0, 0, 0]],
-            color: "#888888",
-          },
+          origin,
         ],
       },
     };

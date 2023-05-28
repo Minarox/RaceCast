@@ -24,18 +24,14 @@ export default {
   },
   data() {
     return {
-      loaded: false,
       speedometer: {
         chart: {
           type: "gauge",
           height: null,
           spacing: [10, 26, 0, 26],
           backgroundColor: "transparent",
-          animation: null,
-          events: {
-            load: () => {
-              this.loaded = true;
-            },
+          animation: {
+            duration: 100,
           },
         },
         lang: {
@@ -99,7 +95,7 @@ export default {
         },
         series: [
           {
-            name: "Vitesse",
+            name: "data",
             data: [0],
             tooltip: {
               valueSuffix: " km/h",
@@ -133,7 +129,7 @@ export default {
           spacing: [12, 10, 4, 10],
           backgroundColor: "transparent",
           animation: {
-            duration: 50,
+            duration: 40,
           },
         },
         lang: {
@@ -172,8 +168,10 @@ export default {
           spline: {
             lineWidth: 3,
           },
-          marker: {
-            enabled: false,
+          series: {
+            marker: {
+              enabled: false,
+            },
           },
         },
         legend: {
@@ -181,7 +179,7 @@ export default {
         },
         series: [
           {
-            name: "Random data",
+            name: "data",
             data: [],
           },
         ],
@@ -192,21 +190,9 @@ export default {
     speed(value) {
       this.speedometer.series[0].data = [parseInt(value)];
 
-      this.histogram.series[0].data.push([
-        new Date().getTime(),
-        parseFloat(value),
-      ]);
+      this.histogram.series[0].data.push([new Date().getTime(), value]);
       if (this.histogram.series[0].data.length > 100) {
         this.histogram.series[0].data.shift();
-      }
-    },
-    loaded(value) {
-      if (!value) {
-        this.speedometer.chart.animation = null;
-      } else {
-        this.speedometer.chart.animation = {
-          duration: 100,
-        };
       }
     },
   },

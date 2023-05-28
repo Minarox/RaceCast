@@ -23,8 +23,75 @@ export default {
     },
   },
   data() {
+    const options = {
+      lang: {
+        noData: this.$t("no_data"),
+      },
+      credits: {
+        enabled: false,
+      },
+      title: {
+        text: null,
+      },
+      legend: {
+        enabled: false,
+      },
+    };
     return {
+      histogram: {
+        ...options,
+        chart: {
+          type: "areaspline",
+          height: null,
+          spacing: [12, 10, 4, 10],
+          backgroundColor: "transparent",
+          animation: {
+            duration: 40,
+          },
+        },
+        time: {
+          useUTC: true,
+        },
+        xAxis: {
+          type: "datetime",
+          tickPixelInterval: 150,
+        },
+        yAxis: {
+          title: {
+            text: null,
+          },
+          plotLines: [
+            {
+              value: 0,
+              width: 1,
+              color: "#808080",
+            },
+          ],
+        },
+        tooltip: {
+          headerFormat: "",
+          pointFormat: "{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}",
+        },
+        plotOptions: {
+          areaspline: {
+            lineWidth: 3,
+            fillOpacity: 0.2,
+          },
+          series: {
+            marker: {
+              enabled: false,
+            },
+          },
+        },
+        series: [
+          {
+            name: "data",
+            data: [],
+          },
+        ],
+      },
       speedometer: {
+        ...options,
         chart: {
           type: "gauge",
           height: null,
@@ -34,12 +101,6 @@ export default {
             duration: 100,
           },
         },
-        lang: {
-          noData: this.$t("no_data"),
-        },
-        credits: {
-          enabled: false,
-        },
         tooltip: {
           enabled: false,
         },
@@ -47,9 +108,6 @@ export default {
           series: {
             enableMouseTracking: false,
           },
-        },
-        title: {
-          text: null,
         },
         pane: {
           startAngle: -90,
@@ -119,68 +177,6 @@ export default {
               backgroundColor: "gray",
               radius: 6,
             },
-          },
-        ],
-      },
-      histogram: {
-        chart: {
-          type: "spline",
-          height: null,
-          spacing: [12, 10, 4, 10],
-          backgroundColor: "transparent",
-          animation: {
-            duration: 40,
-          },
-        },
-        lang: {
-          noData: this.$t("no_data"),
-        },
-        credits: {
-          enabled: false,
-        },
-        time: {
-          useUTC: true,
-        },
-        title: {
-          text: null,
-        },
-        xAxis: {
-          type: "datetime",
-          tickPixelInterval: 150,
-        },
-        yAxis: {
-          title: {
-            text: null,
-          },
-          plotLines: [
-            {
-              value: 0,
-              width: 1,
-              color: "#808080",
-            },
-          ],
-        },
-        tooltip: {
-          headerFormat: "",
-          pointFormat: "{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}",
-        },
-        plotOptions: {
-          spline: {
-            lineWidth: 3,
-          },
-          series: {
-            marker: {
-              enabled: false,
-            },
-          },
-        },
-        legend: {
-          enabled: false,
-        },
-        series: [
-          {
-            name: "data",
-            data: [],
           },
         ],
       },

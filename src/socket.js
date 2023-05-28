@@ -8,7 +8,10 @@ export const state = reactive({
   gyroscope: null,
   speed: 0.0,
   temperature: 0.0,
-  location: [2.213749, 46.227638],
+  location: {
+    longitude: 2.213749,
+    latitude: 46.227638,
+  },
   shutter: false,
   ping: null,
 });
@@ -49,7 +52,7 @@ socket.on("temperature", (value) => {
 });
 
 socket.on("location", (data) => {
-  state.location = [data.longitude, data.latitude];
+  state.location = data;
 });
 
 socket.on("shutter", (boolean) => {

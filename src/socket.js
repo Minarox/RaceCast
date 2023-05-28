@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 export const state = reactive({
   connected: false,
   online: false,
-  acceleration: null,
+  accelerometer: null,
   gyroscope: null,
   speed: 0.0,
   temperature: 0.0,
@@ -32,8 +32,8 @@ socket.on("online", () => {
   state.online = true;
 });
 
-socket.on("acceleration", (data) => {
-  state.acceleration = data;
+socket.on("accelerometer", (data) => {
+  state.accelerometer = data;
 });
 
 socket.on("gyroscope", (data) => {

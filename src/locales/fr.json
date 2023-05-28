@@ -13,5 +13,6 @@
   "temperature": "Température",
   "inertial": "Centrale inertielle",
   "accelerometer": "Accéléromètre",
-  "gyroscope": "Gyroscope"
+  "gyroscope": "Gyroscope",
+  "no_data": "Aucune donnée à afficher"
 }

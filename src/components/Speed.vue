@@ -2,19 +2,15 @@
   <section>
     <Heading :title="$t('speed')" />
     <div>
-      <div class="chart-container">
-        <canvas id="speed-chart" />
-      </div>
-      <p>{{ speed }} km/h</p>
+      <highcharts :options="histogram" />
+      <highcharts :options="speedometer" />
     </div>
   </section>
 </template>
 
 <script>
-import { onMounted } from "vue";
 import { state } from "@/socket";
 import Heading from "@/components/Heading.vue";
-import Chart from "chart.js/auto";
 
 export default {
   name: "SpeedComponent",
@@ -26,107 +22,192 @@ export default {
       return state.speed;
     },
   },
-  setup() {
-    let chartInstance;
-
-    onMounted(() => {
-      const ctx = document.getElementById("speed-chart").getContext("2d");
-      let width, height, gradient;
-
-      function getGradient(ctx, chartArea) {
-        const chartWidth = chartArea.right - chartArea.left;
-        const chartHeight = chartArea.bottom - chartArea.top;
-        if (!gradient || width !== chartWidth || height !== chartHeight) {
-          // Create the gradient because this is either the first render
-          // or the size of the chart has changed
-          width = chartWidth;
-          height = chartHeight;
-          gradient = ctx.createLinearGradient(
-            0,
-            chartArea.bottom,
-            0,
-            chartArea.top
-          );
-          gradient.addColorStop(0, "#00e604");
-          gradient.addColorStop(0.5, "#bea900");
-          gradient.addColorStop(1, "#ff0000");
-        }
-
-        return gradient;
-      }
-
-      chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: [],
-          datasets: [
+  data() {
+    return {
+      loaded: false,
+      speedometer: {
+        chart: {
+          type: "gauge",
+          height: null,
+          spacing: [10, 26, 0, 26],
+          backgroundColor: "transparent",
+          animation: null,
+          events: {
+            load: () => {
+              this.loaded = true;
+            },
+          },
+        },
+        lang: {
+          noData: this.$t("no_data"),
+        },
+        credits: {
+          enabled: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+        plotOptions: {
+          series: {
+            enableMouseTracking: false,
+          },
+        },
+        title: {
+          text: null,
+        },
+        pane: {
+          startAngle: -90,
+          endAngle: 90,
+          background: null,
+        },
+        yAxis: {
+          min: 0,
+          max: 200,
+          tickPixelInterval: 60,
+          minorTickInterval: null,
+          tickPosition: "inside",
+          tickColor: "#FFFFFF",
+          tickLength: 20,
+          tickWidth: 2,
+          labels: {
+            distance: 16,
+            style: {
+              fontSize: "14px",
+            },
+          },
+          lineWidth: 0,
+          plotBands: [
             {
-              data: [],
-              borderColor: function (context) {
-                const chart = context.chart;
-                const { ctx, chartArea } = chart;
-
-                if (!chartArea) {
-                  // This case happens on initial chart load
-                  return;
-                }
-                return getGradient(ctx, chartArea);
-              },
+              from: 0,
+              to: 120,
+              color: "#55BF3B",
+              thickness: 20,
+            },
+            {
+              from: 120,
+              to: 160,
+              color: "#DDDF0D",
+              thickness: 20,
+            },
+            {
+              from: 160,
+              to: 200,
+              color: "#DF5353",
+              thickness: 20,
             },
           ],
         },
-        options: {
-          elements: {
-            point: {
-              radius: 0,
+        series: [
+          {
+            name: "Vitesse",
+            data: [0],
+            tooltip: {
+              valueSuffix: " km/h",
             },
-            line: {
-              tension: 0.3,
-              fill: true,
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-              ticks: {
-                display: false,
+            dataLabels: {
+              format: "{y} km/h",
+              borderWidth: 0,
+              color: "#333333",
+              style: {
+                fontSize: "2.3em",
               },
             },
-            y: {
-              beginAtZero: true,
-              min: 0,
-              max: 160,
+            dial: {
+              radius: "80%",
+              backgroundColor: "gray",
+              baseWidth: 12,
+              baseLength: "0%",
+              rearLength: "0%",
             },
+            pivot: {
+              backgroundColor: "gray",
+              radius: 6,
+            },
+          },
+        ],
+      },
+      histogram: {
+        chart: {
+          type: "spline",
+          height: null,
+          spacing: [12, 10, 4, 10],
+          backgroundColor: "transparent",
+          animation: {
+            duration: 50,
           },
         },
-      });
-    });
-
-    const addData = (label, value) => {
-      chartInstance.data.labels.push(label);
-      chartInstance.data.datasets[0].data.push(value);
-
-      if (chartInstance.data.labels.length > 100) {
-        chartInstance.data.labels.shift();
-        chartInstance.data.datasets[0].data.shift();
-      }
-
-      chartInstance.update("none");
+        lang: {
+          noData: this.$t("no_data"),
+        },
+        credits: {
+          enabled: false,
+        },
+        time: {
+          useUTC: true,
+        },
+        title: {
+          text: null,
+        },
+        xAxis: {
+          type: "datetime",
+          tickPixelInterval: 150,
+        },
+        yAxis: {
+          title: {
+            text: null,
+          },
+          plotLines: [
+            {
+              value: 0,
+              width: 1,
+              color: "#808080",
+            },
+          ],
+        },
+        tooltip: {
+          headerFormat: "",
+          pointFormat: "{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}",
+        },
+        plotOptions: {
+          spline: {
+            lineWidth: 3,
+          },
+          marker: {
+            enabled: false,
+          },
+        },
+        legend: {
+          enabled: false,
+        },
+        series: [
+          {
+            name: "Random data",
+            data: [],
+          },
+        ],
+      },
     };
-
-    return { addData };
   },
   watch: {
     speed(value) {
-      this.addData(new Date().toLocaleTimeString(), value);
+      this.speedometer.series[0].data = [parseInt(value)];
+
+      this.histogram.series[0].data.push([
+        new Date().getTime(),
+        parseFloat(value),
+      ]);
+      if (this.histogram.series[0].data.length > 100) {
+        this.histogram.series[0].data.shift();
+      }
+    },
+    loaded(value) {
+      if (!value) {
+        this.speedometer.chart.animation = null;
+      } else {
+        this.speedometer.chart.animation = {
+          duration: 100,
+        };
+      }
     },
   },
 };
@@ -143,18 +224,19 @@ section {
   overflow: hidden;
 
   > div {
-    align-items: center;
-    display: flex;
-    flex-flow: row nowrap;
+    border: 1px solid transparent;
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
     height: 100%;
-    justify-content: center;
     width: 100%;
 
-    > p {
-      font-size: 1.6em;
-      padding: 0.9rem;
-      text-align: center;
-      width: 250px;
+    > * {
+      height: inherit;
+      width: 100%;
+
+      &:last-child {
+        transform: translateY(14px);
+      }
     }
   }
 }

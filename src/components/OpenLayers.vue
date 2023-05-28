@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     location() {
-      return state.location;
+      return [state.location.longitude, state.location.latitude];
     },
   },
   data() {

@@ -2,27 +2,15 @@
   <section>
     <Heading :title="$t('inertial')" />
     <div>
-      <div>
-        <p>{{ $t("accelerometer") }}</p>
-        <div class="chart-container">
-          <canvas id="accelerometer-chart" />
-        </div>
-      </div>
-      <div>
-        <p>{{ $t("gyroscope") }}</p>
-        <div class="chart-container">
-          <canvas id="gyroscope-chart" />
-        </div>
-      </div>
+      <highcharts :options="accelChart" />
+      <highcharts :options="gyroChart" />
     </div>
   </section>
 </template>
 
 <script>
-import { onMounted } from "vue";
 import { state } from "@/socket";
 import Heading from "@/components/Heading.vue";
-import Chart from "chart.js/auto";
 
 export default {
   name: "InertialComponent",
@@ -30,143 +18,192 @@ export default {
     Heading,
   },
   computed: {
-    acceleration() {
-      return state.acceleration;
+    accelerometer() {
+      return state.accelerometer;
     },
     gyroscope() {
       return state.gyroscope;
     },
   },
-  setup() {
-    let accelerometerChart, gyroscopeChart;
-
-    onMounted(() => {
-      accelerometerChart = new Chart(
-        document.getElementById("accelerometer-chart").getContext("2d"),
-        {
-          type: "bubble",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                backgroundColor: "#ff0000",
-              },
-            ],
+  data() {
+    return {
+      accelChart: {
+        chart: {
+          height: null,
+          spacing: [10, 0, 0, 0],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 6,
+            beta: 16,
+            depth: 400,
           },
-          options: {
-            elements: {
-              point: {
-                radius: 0,
-              },
-              line: {
-                tension: 0.3,
-                fill: true,
-              },
-            },
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                min: -3,
-                max: 3,
-              },
-              y: {
-                min: -3,
-                max: 3,
-              },
-            },
-          },
-        }
-      );
-      gyroscopeChart = new Chart(
-        document.getElementById("gyroscope-chart").getContext("2d"),
-        {
-          type: "bubble",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                backgroundColor: "#ff0000",
-              },
-            ],
-          },
-          options: {
-            elements: {
-              point: {
-                radius: 0,
-              },
-              line: {
-                tension: 0.3,
-                fill: true,
-              },
-            },
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                min: -3,
-                max: 3,
-              },
-              y: {
-                min: -3,
-                max: 3,
-              },
+        },
+        lang: {
+          noData: this.$t("no_data"),
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          enabled: false,
+        },
+        title: {
+          text: this.$t("accelerometer"),
+        },
+        yAxis: {
+          min: -3,
+          max: 3,
+          title: null,
+        },
+        xAxis: {
+          min: -3,
+          max: 3,
+          gridLineWidth: 1,
+        },
+        zAxis: {
+          min: -3,
+          max: 3,
+          showFirstLabel: false,
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              radius: 6,
             },
           },
-        }
-      );
-    });
-
-    const addDataAccelerometer = (label, value) => {
-      accelerometerChart.data.labels.push(label);
-      accelerometerChart.data.datasets[0].data.push({
-        x: value.x,
-        y: value.y,
-        r: 8,
-      });
-
-      if (accelerometerChart.data.labels.length > 1) {
-        accelerometerChart.data.labels.shift();
-        accelerometerChart.data.datasets[0].data.shift();
-      }
-
-      accelerometerChart.update("none");
+        },
+        series: [
+          {
+            name: "data",
+            data: [[0, 0, 0]],
+            color: "#FF0000",
+          },
+          {
+            name: "origin",
+            data: [[0, 0, 0]],
+            color: "#888888",
+          },
+        ],
+      },
+      gyroChart: {
+        chart: {
+          height: null,
+          spacing: [10, 0, 0, 0],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 6,
+            beta: 16,
+            depth: 400,
+          },
+        },
+        lang: {
+          noData: this.$t("no_data"),
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          enabled: false,
+        },
+        title: {
+          text: this.$t("gyroscope"),
+        },
+        yAxis: {
+          min: -3,
+          max: 3,
+          title: null,
+        },
+        xAxis: {
+          min: -3,
+          max: 3,
+          gridLineWidth: 1,
+        },
+        zAxis: {
+          min: -3,
+          max: 3,
+          showFirstLabel: false,
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              radius: 6,
+            },
+          },
+        },
+        series: [
+          {
+            name: "data",
+            data: [[0, 0, 0]],
+            color: "#FF0000",
+          },
+          {
+            name: "origin",
+            data: [[0, 0, 0]],
+            color: "#888888",
+          },
+        ],
+      },
     };
-
-    const addDataGyroscope = (label, value) => {
-      gyroscopeChart.data.labels.push(label);
-      gyroscopeChart.data.datasets[0].data.push({
-        x: value.x,
-        y: value.y,
-        r: 8,
-      });
-
-      if (gyroscopeChart.data.labels.length > 1) {
-        gyroscopeChart.data.labels.shift();
-        gyroscopeChart.data.datasets[0].data.shift();
-      }
-
-      gyroscopeChart.update("none");
-    };
-
-    return { addDataAccelerometer, addDataGyroscope };
   },
+  /*mounted() {
+    function dragStart(eStart) {
+      eStart = chart.pointer.normalize(eStart);
+
+      var posX = eStart.chartX,
+        posY = eStart.chartY,
+        alpha = chart.options.chart.options3d.alpha,
+        beta = chart.options.chart.options3d.beta,
+        sensitivity = 5, // lower is more sensitive
+        handlers = [];
+
+      function drag(e) {
+        // Get e.chartX and e.chartY
+        e = chart.pointer.normalize(e);
+
+        chart.update(
+          {
+            chart: {
+              options3d: {
+                alpha: alpha + (e.chartY - posY) / sensitivity,
+                beta: beta + (posX - e.chartX) / sensitivity,
+              },
+            },
+          },
+          undefined,
+          undefined,
+          false
+        );
+      }
+
+      function unbindAll() {
+        handlers.forEach(function (unbind) {
+          if (unbind) {
+            unbind();
+          }
+        });
+        handlers.length = 0;
+      }
+
+      handlers.push(H.addEvent(document, "mousemove", drag));
+      handlers.push(H.addEvent(document, "touchmove", drag));
+
+      handlers.push(H.addEvent(document, "mouseup", unbindAll));
+      handlers.push(H.addEvent(document, "touchend", unbindAll));
+    }
+
+    H.addEvent(chart.container, "mousedown", dragStart);
+    H.addEvent(chart.container, "touchstart", dragStart);
+  },*/
   watch: {
-    acceleration(value) {
-      this.addDataAccelerometer(new Date().toLocaleTimeString(), value);
+    accelerometer(value) {
+      this.accelChart.series[0].data = [value];
     },
     gyroscope(value) {
-      this.addDataGyroscope(new Date().toLocaleTimeString(), value);
+      this.gyroChart.series[0].data = [value];
     },
   },
 };
@@ -179,18 +216,21 @@ section {
   border-radius: var(--border-radius);
   display: flex;
   flex-flow: column nowrap;
-  height: 100%;
   justify-content: flex-start;
   overflow: hidden;
 
   > div {
-    align-items: center;
+    border: 1px solid transparent;
     display: grid;
+    gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
     height: 100%;
-    justify-content: center;
-    text-align: center;
     width: 100%;
+
+    > * {
+      height: inherit;
+      width: 100%;
+    }
   }
 }
 </style>

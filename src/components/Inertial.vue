@@ -2,8 +2,8 @@
   <section>
     <Heading :title="$t('inertial')" />
     <div>
-      <highcharts :options="accelChart" />
-      <highcharts :options="gyroChart" />
+      <highcharts id="accel-chart" :options="accelChart" />
+      <highcharts id="gyro-chart" :options="gyroChart" />
     </div>
   </section>
 </template>
@@ -62,6 +62,10 @@ export default {
       color: "#888888",
     };
     return {
+      accel: null,
+      gyro: null,
+      element: null,
+      animation: true,
       accelChart: {
         ...options,
         title: {
@@ -122,55 +126,64 @@ export default {
       },
     };
   },
-  /*mounted() {
-    function dragStart(eStart) {
-      eStart = chart.pointer.normalize(eStart);
+  mounted() {
+    this.accel = document.getElementById("accel-chart");
+    this.gyro = document.getElementById("gyro-chart");
 
-      var posX = eStart.chartX,
-        posY = eStart.chartY,
-        alpha = chart.options.chart.options3d.alpha,
-        beta = chart.options.chart.options3d.beta,
-        sensitivity = 5, // lower is more sensitive
-        handlers = [];
-
-      function drag(e) {
-        // Get e.chartX and e.chartY
-        e = chart.pointer.normalize(e);
-
-        chart.update(
-          {
-            chart: {
-              options3d: {
-                alpha: alpha + (e.chartY - posY) / sensitivity,
-                beta: beta + (posX - e.chartX) / sensitivity,
-              },
-            },
-          },
-          undefined,
-          undefined,
-          false
-        );
+    ["mouseup", "touchend"].forEach((type) => {
+      document.addEventListener(type, this.release, {
+        passive: true,
+      });
+    });
+    ["mousedown", "touchstart"].forEach((type) => {
+      this.accel.addEventListener(type, this.click, {
+        passive: true,
+      });
+      this.gyro.addEventListener(type, this.click, {
+        passive: true,
+      });
+    });
+  },
+  methods: {
+    click(event) {
+      this.element = event.target;
+      while (
+        this.element.id !== "accel-chart" &&
+        this.element.id !== "gyro-chart"
+      ) {
+        this.element = this.element.parentNode;
       }
 
-      function unbindAll() {
-        handlers.forEach(function (unbind) {
-          if (unbind) {
-            unbind();
-          }
+      ["mousemove", "touchmove"].forEach((type) => {
+        this.element.addEventListener(type, this.drag, {
+          passive: true,
         });
-        handlers.length = 0;
+      });
+    },
+    drag() {
+      if (this.animation) {
+        this.animation = false;
+
+        // TODO: compute mouse movement and apply to graph
+        console.log(this.element.id);
+
+        requestAnimationFrame(() => {
+          this.animation = true;
+        });
       }
-
-      handlers.push(H.addEvent(document, "mousemove", drag));
-      handlers.push(H.addEvent(document, "touchmove", drag));
-
-      handlers.push(H.addEvent(document, "mouseup", unbindAll));
-      handlers.push(H.addEvent(document, "touchend", unbindAll));
-    }
-
-    H.addEvent(chart.container, "mousedown", dragStart);
-    H.addEvent(chart.container, "touchstart", dragStart);
-  },*/
+    },
+    release() {
+      ["mousemove", "touchmove"].forEach((type) => {
+        this.accel.removeEventListener(type, this.drag, {
+          passive: true,
+        });
+        this.gyro.removeEventListener(type, this.drag, {
+          passive: true,
+        });
+      });
+      this.element = null;
+    },
+  },
   watch: {
     accelerometer(value) {
       this.accelChart.series[0].data = [value];

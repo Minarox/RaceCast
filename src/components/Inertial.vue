@@ -2,27 +2,15 @@
   <section>
     <Heading :title="$t('inertial')" />
     <div>
-      <div>
-        <p>{{ $t("accelerometer") }}</p>
-        <div class="chart-container">
-          <canvas id="accelerometer-chart" />
-        </div>
-      </div>
-      <div>
-        <p>{{ $t("gyroscope") }}</p>
-        <div class="chart-container">
-          <canvas id="gyroscope-chart" />
-        </div>
-      </div>
+      <highcharts id="accel-chart" :options="accelChart" />
+      <highcharts id="gyro-chart" :options="gyroChart" />
     </div>
   </section>
 </template>
 
 <script>
-import { onMounted } from "vue";
 import { state } from "@/socket";
 import Heading from "@/components/Heading.vue";
-import Chart from "chart.js/auto";
 
 export default {
   name: "InertialComponent",
@@ -30,143 +18,208 @@ export default {
     Heading,
   },
   computed: {
-    acceleration() {
-      return state.acceleration;
+    accelerometer() {
+      return state.accelerometer;
     },
     gyroscope() {
       return state.gyroscope;
     },
   },
-  setup() {
-    let accelerometerChart, gyroscopeChart;
-
-    onMounted(() => {
-      accelerometerChart = new Chart(
-        document.getElementById("accelerometer-chart").getContext("2d"),
-        {
-          type: "bubble",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                backgroundColor: "#ff0000",
-              },
-            ],
+  data() {
+    const options = {
+      lang: {
+        noData: this.$t("no_data"),
+      },
+      credits: {
+        enabled: false,
+      },
+      legend: {
+        enabled: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+      plotOptions: {
+        series: {
+          marker: {
+            radius: 6,
           },
-          options: {
-            elements: {
-              point: {
-                radius: 0,
-              },
-              line: {
-                tension: 0.3,
-                fill: true,
-              },
-            },
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                min: -3,
-                max: 3,
-              },
-              y: {
-                min: -3,
-                max: 3,
-              },
-            },
+        },
+      },
+    };
+    const origin = {
+      name: "origin",
+      data: [[0, 0, 0]],
+      color: "#888888",
+    };
+    return {
+      element: null,
+      pose: null,
+      animation: true,
+      accelChart: {
+        ...options,
+        chart: {
+          height: null,
+          spacing: [10, 10, 4, 10],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 10,
+            beta: 20,
+            depth: 400,
           },
-        }
-      );
-      gyroscopeChart = new Chart(
-        document.getElementById("gyroscope-chart").getContext("2d"),
-        {
-          type: "bubble",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                backgroundColor: "#ff0000",
-              },
-            ],
+        },
+        title: {
+          text: this.$t("accelerometer"),
+        },
+        yAxis: {
+          min: -3,
+          max: 3,
+          title: null,
+        },
+        xAxis: {
+          min: -3,
+          max: 3,
+          gridLineWidth: 1,
+        },
+        zAxis: {
+          min: -3,
+          max: 3,
+          showFirstLabel: false,
+        },
+        series: [
+          {
+            name: "data",
+            data: [[0, 0, 0]],
+            color: "#FF0000",
           },
-          options: {
-            elements: {
-              point: {
-                radius: 0,
-              },
-              line: {
-                tension: 0.3,
-                fill: true,
-              },
-            },
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                min: -3,
-                max: 3,
-              },
-              y: {
-                min: -3,
-                max: 3,
-              },
-            },
+          origin,
+        ],
+      },
+      gyroChart: {
+        ...options,
+        chart: {
+          height: null,
+          spacing: [10, 10, 4, 10],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 10,
+            beta: 20,
+            depth: 400,
           },
-        }
-      );
+        },
+        title: {
+          text: this.$t("gyroscope"),
+        },
+        yAxis: {
+          min: -3,
+          max: 3,
+          title: null,
+        },
+        xAxis: {
+          min: -3,
+          max: 3,
+          gridLineWidth: 1,
+        },
+        zAxis: {
+          min: -3,
+          max: 3,
+          showFirstLabel: false,
+        },
+        series: [
+          {
+            name: "data",
+            data: [[0, 0, 0]],
+            color: "#FF0000",
+          },
+          origin,
+        ],
+      },
+    };
+  },
+  mounted() {
+    ["mouseup", "touchend"].forEach((type) => {
+      document.addEventListener(type, this.release, {
+        passive: true,
+      });
     });
-
-    const addDataAccelerometer = (label, value) => {
-      accelerometerChart.data.labels.push(label);
-      accelerometerChart.data.datasets[0].data.push({
-        x: value.x,
-        y: value.y,
-        r: 8,
+    ["mousedown", "touchstart"].forEach((type) => {
+      document
+        .getElementById("accel-chart")
+        .addEventListener(type, this.click, {
+          passive: true,
+        });
+      document.getElementById("gyro-chart").addEventListener(type, this.click, {
+        passive: true,
       });
-
-      if (accelerometerChart.data.labels.length > 1) {
-        accelerometerChart.data.labels.shift();
-        accelerometerChart.data.datasets[0].data.shift();
+    });
+  },
+  methods: {
+    click(event) {
+      this.element = event.target;
+      while (
+        this.element.id !== "accel-chart" &&
+        this.element.id !== "gyro-chart"
+      ) {
+        this.element = this.element.parentNode;
       }
 
-      accelerometerChart.update("none");
-    };
+      this.pose = {
+        x: event.pageX,
+        y: event.pageY,
+      };
 
-    const addDataGyroscope = (label, value) => {
-      gyroscopeChart.data.labels.push(label);
-      gyroscopeChart.data.datasets[0].data.push({
-        x: value.x,
-        y: value.y,
-        r: 8,
+      ["mousemove", "touchmove"].forEach((type) => {
+        document.addEventListener(type, this.drag, {
+          passive: true,
+        });
       });
+    },
+    drag(event) {
+      if (this.animation) {
+        this.animation = false;
 
-      if (gyroscopeChart.data.labels.length > 1) {
-        gyroscopeChart.data.labels.shift();
-        gyroscopeChart.data.datasets[0].data.shift();
+        // TODO: compute mouse movement and apply to graph
+        if (this.element.id === "accel-chart") {
+          this.accelChart.chart.options3d.alpha +=
+            (event.pageY - this.pose.y) / 2;
+          this.accelChart.chart.options3d.beta -=
+            (event.pageX - this.pose.x) / 2;
+        } else if (this.element.id === "gyro-chart") {
+          this.gyroChart.chart.options3d.alpha +=
+            (event.pageY - this.pose.y) / 2;
+          this.gyroChart.chart.options3d.beta -=
+            (event.pageX - this.pose.x) / 2;
+        }
+
+        this.pose = {
+          x: event.pageX,
+          y: event.pageY,
+        };
+
+        requestAnimationFrame(() => {
+          this.animation = true;
+        });
       }
-
-      gyroscopeChart.update("none");
-    };
-
-    return { addDataAccelerometer, addDataGyroscope };
+    },
+    release() {
+      ["mousemove", "touchmove"].forEach((type) => {
+        document.removeEventListener(type, this.drag, {
+          passive: true,
+        });
+      });
+      this.pose = this.element = null;
+    },
   },
   watch: {
-    acceleration(value) {
-      this.addDataAccelerometer(new Date().toLocaleTimeString(), value);
+    accelerometer(value) {
+      this.accelChart.series[0].data = [value];
     },
     gyroscope(value) {
-      this.addDataGyroscope(new Date().toLocaleTimeString(), value);
+      this.gyroChart.series[0].data = [value];
     },
   },
 };
@@ -179,18 +232,21 @@ section {
   border-radius: var(--border-radius);
   display: flex;
   flex-flow: column nowrap;
-  height: 100%;
   justify-content: flex-start;
   overflow: hidden;
 
   > div {
-    align-items: center;
+    border: 1px solid transparent;
     display: grid;
+    gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
     height: 100%;
-    justify-content: center;
-    text-align: center;
     width: 100%;
+
+    > * {
+      height: inherit;
+      width: 100%;
+    }
   }
 }
 </style>

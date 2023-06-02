@@ -13,5 +13,6 @@
   "temperature": "Temperature",
   "inertial": "Inertial measurement system",
   "accelerometer": "Accelerometer",
-  "gyroscope": "Gyroscope"
+  "gyroscope": "Gyroscope",
+  "no_data": "No data to display"
 }

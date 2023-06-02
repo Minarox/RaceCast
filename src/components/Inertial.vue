@@ -27,18 +27,6 @@ export default {
   },
   data() {
     const options = {
-      chart: {
-        height: null,
-        spacing: [10, 0, 0, 0],
-        backgroundColor: "transparent",
-        type: "scatter3d",
-        options3d: {
-          enabled: true,
-          alpha: 10,
-          beta: 20,
-          depth: 400,
-        },
-      },
       lang: {
         noData: this.$t("no_data"),
       },
@@ -46,6 +34,9 @@ export default {
         enabled: false,
       },
       legend: {
+        enabled: false,
+      },
+      tooltip: {
         enabled: false,
       },
       plotOptions: {
@@ -62,12 +53,23 @@ export default {
       color: "#888888",
     };
     return {
-      accel: null,
-      gyro: null,
       element: null,
+      pose: null,
       animation: true,
       accelChart: {
         ...options,
+        chart: {
+          height: null,
+          spacing: [10, 10, 4, 10],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 10,
+            beta: 20,
+            depth: 400,
+          },
+        },
         title: {
           text: this.$t("accelerometer"),
         },
@@ -97,6 +99,18 @@ export default {
       },
       gyroChart: {
         ...options,
+        chart: {
+          height: null,
+          spacing: [10, 10, 4, 10],
+          backgroundColor: "transparent",
+          type: "scatter3d",
+          options3d: {
+            enabled: true,
+            alpha: 10,
+            beta: 20,
+            depth: 400,
+          },
+        },
         title: {
           text: this.$t("gyroscope"),
         },
@@ -127,19 +141,18 @@ export default {
     };
   },
   mounted() {
-    this.accel = document.getElementById("accel-chart");
-    this.gyro = document.getElementById("gyro-chart");
-
     ["mouseup", "touchend"].forEach((type) => {
       document.addEventListener(type, this.release, {
         passive: true,
       });
     });
     ["mousedown", "touchstart"].forEach((type) => {
-      this.accel.addEventListener(type, this.click, {
-        passive: true,
-      });
-      this.gyro.addEventListener(type, this.click, {
+      document
+        .getElementById("accel-chart")
+        .addEventListener(type, this.click, {
+          passive: true,
+        });
+      document.getElementById("gyro-chart").addEventListener(type, this.click, {
         passive: true,
       });
     });
@@ -154,18 +167,38 @@ export default {
         this.element = this.element.parentNode;
       }
 
+      this.pose = {
+        x: event.pageX,
+        y: event.pageY,
+      };
+
       ["mousemove", "touchmove"].forEach((type) => {
-        this.element.addEventListener(type, this.drag, {
+        document.addEventListener(type, this.drag, {
           passive: true,
         });
       });
     },
-    drag() {
+    drag(event) {
       if (this.animation) {
         this.animation = false;
 
         // TODO: compute mouse movement and apply to graph
-        console.log(this.element.id);
+        if (this.element.id === "accel-chart") {
+          this.accelChart.chart.options3d.alpha +=
+            (event.pageY - this.pose.y) / 2;
+          this.accelChart.chart.options3d.beta -=
+            (event.pageX - this.pose.x) / 2;
+        } else if (this.element.id === "gyro-chart") {
+          this.gyroChart.chart.options3d.alpha +=
+            (event.pageY - this.pose.y) / 2;
+          this.gyroChart.chart.options3d.beta -=
+            (event.pageX - this.pose.x) / 2;
+        }
+
+        this.pose = {
+          x: event.pageX,
+          y: event.pageY,
+        };
 
         requestAnimationFrame(() => {
           this.animation = true;
@@ -174,14 +207,11 @@ export default {
     },
     release() {
       ["mousemove", "touchmove"].forEach((type) => {
-        this.accel.removeEventListener(type, this.drag, {
-          passive: true,
-        });
-        this.gyro.removeEventListener(type, this.drag, {
+        document.removeEventListener(type, this.drag, {
           passive: true,
         });
       });
-      this.element = null;
+      this.pose = this.element = null;
     },
   },
   watch: {

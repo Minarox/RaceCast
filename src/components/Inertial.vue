@@ -3,7 +3,7 @@
     <Heading :title="$t('inertial')" />
     <div>
       <highcharts id="accel-chart" :options="accelChart" />
-      <highcharts id="gyro-chart" :options="gyroChart" />
+      <highcharts :options="gyroChart" />
     </div>
   </section>
 </template>
@@ -19,10 +19,23 @@ export default {
   },
   computed: {
     accelerometer() {
-      return state.accelerometer;
+      if (state.mpu6050 && state.mpu6050.accel) {
+        return {
+          x: state.mpu6050.accel.x,
+          y: state.mpu6050.accel.z * -1,
+          z: state.mpu6050.accel.y,
+        };
+      }
+      return null;
     },
     gyroscope() {
-      return state.gyroscope;
+      if (state.mpu6050 && state.mpu6050.gyro) {
+        return {
+          x: state.mpu6050.gyro.y,
+          y: state.mpu6050.gyro.x * -1,
+        };
+      }
+      return null;
     },
   },
   data() {
@@ -47,11 +60,6 @@ export default {
         },
       },
     };
-    const origin = {
-      name: "origin",
-      data: [[0, 0, 0]],
-      color: "#888888",
-    };
     return {
       element: null,
       pose: null,
@@ -63,29 +71,31 @@ export default {
           spacing: [10, 10, 4, 10],
           backgroundColor: "transparent",
           type: "scatter3d",
+          animation: false,
           options3d: {
             enabled: true,
             alpha: 10,
             beta: 20,
-            depth: 400,
+            depth: 300,
+            fitToPlot: false,
           },
         },
         title: {
           text: this.$t("accelerometer"),
         },
         yAxis: {
-          min: -3,
-          max: 3,
+          min: -2.5,
+          max: 2.5,
           title: null,
         },
         xAxis: {
-          min: -3,
-          max: 3,
+          min: -2.5,
+          max: 2.5,
           gridLineWidth: 1,
         },
         zAxis: {
-          min: -3,
-          max: 3,
+          min: -2.5,
+          max: 2.5,
           showFirstLabel: false,
         },
         series: [
@@ -94,7 +104,11 @@ export default {
             data: [[0, 0, 0]],
             color: "#FF0000",
           },
-          origin,
+          {
+            name: "origin",
+            data: [[0, 0, 0]],
+            color: "#888888",
+          },
         ],
       },
       gyroChart: {
@@ -103,39 +117,33 @@ export default {
           height: null,
           spacing: [10, 10, 4, 10],
           backgroundColor: "transparent",
-          type: "scatter3d",
-          options3d: {
-            enabled: true,
-            alpha: 10,
-            beta: 20,
-            depth: 400,
-          },
+          type: "scatter",
+          animation: false,
         },
         title: {
           text: this.$t("gyroscope"),
         },
         yAxis: {
-          min: -3,
-          max: 3,
+          min: -260,
+          max: 260,
           title: null,
         },
         xAxis: {
-          min: -3,
-          max: 3,
+          min: -260,
+          max: 260,
           gridLineWidth: 1,
-        },
-        zAxis: {
-          min: -3,
-          max: 3,
-          showFirstLabel: false,
         },
         series: [
           {
             name: "data",
-            data: [[0, 0, 0]],
+            data: [[0, 0]],
             color: "#FF0000",
           },
-          origin,
+          {
+            name: "origin",
+            data: [[0, 0]],
+            color: "#888888",
+          },
         ],
       },
     };
@@ -152,18 +160,12 @@ export default {
         .addEventListener(type, this.click, {
           passive: true,
         });
-      document.getElementById("gyro-chart").addEventListener(type, this.click, {
-        passive: true,
-      });
     });
   },
   methods: {
     click(event) {
       this.element = event.target;
-      while (
-        this.element.id !== "accel-chart" &&
-        this.element.id !== "gyro-chart"
-      ) {
+      while (this.element.id !== "accel-chart") {
         this.element = this.element.parentNode;
       }
 
@@ -187,11 +189,6 @@ export default {
           this.accelChart.chart.options3d.alpha +=
             (event.pageY - this.pose.y) / 2;
           this.accelChart.chart.options3d.beta -=
-            (event.pageX - this.pose.x) / 2;
-        } else if (this.element.id === "gyro-chart") {
-          this.gyroChart.chart.options3d.alpha +=
-            (event.pageY - this.pose.y) / 2;
-          this.gyroChart.chart.options3d.beta -=
             (event.pageX - this.pose.x) / 2;
         }
 

@@ -77,7 +77,7 @@ export default {
             alpha: 10,
             beta: 20,
             depth: 300,
-            fitToPlot: false,
+            // fitToPlot: false,
           },
         },
         title: {

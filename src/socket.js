@@ -8,6 +8,7 @@ export const state = reactive({
   gps: null,
   shutter: false,
   ping: null,
+  lastConnection: null,
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
@@ -45,6 +46,10 @@ socket.on("shutter", (boolean) => {
 
 socket.on("latency", (value) => {
   state.ping = value;
+});
+
+socket.on("lastConnection", (timestamp) => {
+  state.lastConnection = timestamp;
 });
 
 socket.on("offline", () => {

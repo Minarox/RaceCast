@@ -49,9 +49,9 @@ export default {
       legend: {
         enabled: false,
       },
-      tooltip: {
+      /*tooltip: {
         enabled: false,
-      },
+      },*/
       plotOptions: {
         series: {
           marker: {

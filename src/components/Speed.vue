@@ -19,7 +19,10 @@ export default {
   },
   computed: {
     speed() {
-      return state.speed;
+      if (state.gps && state.gps.speed) {
+        return state.gps.speed;
+      }
+      return null;
     },
   },
   data() {
@@ -45,9 +48,7 @@ export default {
           height: null,
           spacing: [12, 10, 4, 10],
           backgroundColor: "transparent",
-          animation: {
-            duration: 40,
-          },
+          animation: true,
         },
         time: {
           useUTC: true,
@@ -97,9 +98,7 @@ export default {
           height: null,
           spacing: [10, 26, 0, 26],
           backgroundColor: "transparent",
-          animation: {
-            duration: 100,
-          },
+          animation: true,
         },
         tooltip: {
           enabled: false,
@@ -183,13 +182,19 @@ export default {
     };
   },
   watch: {
-    speed(value) {
-      this.speedometer.series[0].data = [parseInt(value)];
+    speed: {
+      deep: true,
+      handler(value) {
+        this.speedometer.series[0].data = [parseInt(value)];
 
-      this.histogram.series[0].data.push([new Date().getTime(), value]);
-      if (this.histogram.series[0].data.length > 100) {
-        this.histogram.series[0].data.shift();
-      }
+        this.histogram.series[0].data.push([
+          new Date().getTime() + 2 * 60 * 60 * 1000,
+          value,
+        ]);
+        if (this.histogram.series[0].data.length > 100) {
+          this.histogram.series[0].data.shift();
+        }
+      },
     },
   },
 };

@@ -5,10 +5,7 @@ export const state = reactive({
   connected: false,
   online: false,
   mpu6050: null,
-  location: {
-    longitude: 2.213749,
-    latitude: 46.227638,
-  },
+  gps: null,
   shutter: false,
   ping: null,
 });
@@ -38,8 +35,8 @@ socket.on("mpu6050", (data) => {
   state.mpu6050 = data;
 });
 
-socket.on("location", (data) => {
-  state.location = data;
+socket.on("gps", (data) => {
+  state.gps = data;
 });
 
 socket.on("shutter", (boolean) => {

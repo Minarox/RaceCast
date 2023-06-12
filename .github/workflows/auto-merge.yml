@@ -15,4 +15,4 @@ jobs:
           botName: dependabot
           approve: true
           target: patch
-          github-token: ${{ secrets.MERGE_TOKEN }}
+          github-token: coucou

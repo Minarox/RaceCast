@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "core-js": "^3.31.0",
-    "highcharts": "^11.0.1",
+    "highcharts": "^11.1.0",
     "highcharts-vue": "^1.4.2",
     "ol": "^7.4.0",
     "register-service-worker": "^1.7.2",

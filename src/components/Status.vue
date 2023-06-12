@@ -4,20 +4,18 @@
     <div v-else>
       <p>
         <span v-if="online">{{ $t("system.connected") }}</span>
-        <span v-else
-          >{{ $t("system.disconnected")
-          }}<span v-if="lastConnection">
+        <span v-else>
+          {{ $t("system.disconnected") }}
+          <span v-if="lastConnection">
             ({{
               $t("since", { date: lastConnection[0], time: lastConnection[1] })
-            }})</span
-          ></span
-        >
+            }})
+          </span>
+        </span>
         <span v-if="ping && online"> ({{ ping }} ms)</span>
       </p>
-      <p v-if="shutter === true" id="shutter">
-        <span />{{ $t("shutter.record") }}
-      </p>
-      <p v-else-if="shutter === false">{{ $t("shutter.standby") }}</p>
+      <p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>
+      <p v-else-if="lastConnection">{{ $t("shutter.standby") }}</p>
     </div>
   </header>
 </template>

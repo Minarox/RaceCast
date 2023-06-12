@@ -11,8 +11,8 @@ jobs:
       - uses: ahmadnassri/action-dependabot-auto-merge@v2
         with:
           config: .github/workflows/auto-merge.yml
+          github-token: coucou
           command: merge
           botName: dependabot
           approve: true
           target: patch
-          github-token: ${{ secrets.MERGE_TOKEN }}

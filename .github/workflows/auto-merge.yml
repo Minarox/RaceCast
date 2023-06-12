@@ -10,9 +10,4 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ahmadnassri/action-dependabot-auto-merge@v2
         with:
-          config: .github/workflows/auto-merge.yml
           github-token: ${{ secrets.MERGE_TOKEN }}
-          command: merge
-          botName: dependabot
-          approve: true
-          target: patch

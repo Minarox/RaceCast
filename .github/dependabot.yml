@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
       time: "09:00"
       timezone: "Europe/Paris"
     labels:
@@ -19,7 +19,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "daily"
       time: "09:00"
       timezone: "Europe/Paris"
     labels:

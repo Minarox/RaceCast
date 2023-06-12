@@ -14,5 +14,6 @@
   "inertial": "Inertial measurement system",
   "accelerometer": "Accelerometer",
   "gyroscope": "Gyroscope",
-  "no_data": "No data to display"
+  "no_data": "No data",
+  "since": "since { date } at { time }"
 }

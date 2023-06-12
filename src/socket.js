@@ -4,21 +4,18 @@ import { io } from "socket.io-client";
 export const state = reactive({
   connected: false,
   online: false,
-  accelerometer: null,
-  gyroscope: null,
-  speed: 0.0,
-  temperature: 0.0,
-  location: {
-    longitude: 2.213749,
-    latitude: 46.227638,
-  },
+  mpu6050: null,
+  gps: null,
   shutter: false,
   ping: null,
+  lastConnection: null,
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
 const URL =
-  process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+  process.env.NODE_ENV === "production"
+    ? undefined
+    : "https://rallye.minarox.fr";
 
 export const socket = io(URL, {
   reconnectionDelay: 300,
@@ -35,32 +32,24 @@ socket.on("online", () => {
   state.online = true;
 });
 
-socket.on("accelerometer", (data) => {
-  state.accelerometer = data;
+socket.on("mpu6050", (data) => {
+  state.mpu6050 = data;
 });
 
-socket.on("gyroscope", (data) => {
-  state.gyroscope = data;
-});
-
-socket.on("speed", (value) => {
-  state.speed = value;
-});
-
-socket.on("temperature", (value) => {
-  state.temperature = value;
-});
-
-socket.on("location", (data) => {
-  state.location = data;
+socket.on("gps", (data) => {
+  state.gps = data;
 });
 
 socket.on("shutter", (boolean) => {
   state.shutter = boolean;
 });
 
-socket.on("ping", (value) => {
+socket.on("latency", (value) => {
   state.ping = value;
+});
+
+socket.on("lastConnection", (timestamp) => {
+  state.lastConnection = timestamp;
 });
 
 socket.on("offline", () => {

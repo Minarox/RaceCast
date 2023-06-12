@@ -1,7 +1,8 @@
 <template>
   <section>
     <Heading :title="$t('temperature')" />
-    <p>{{ temperature }} °C</p>
+    <p v-if="temperature">{{ temperature }} °C</p>
+    <p v-else>{{ $t("no_data") }}</p>
   </section>
 </template>
 
@@ -16,7 +17,10 @@ export default {
   },
   computed: {
     temperature() {
-      return state.temperature;
+      if (state.mpu6050 && state.mpu6050.temp) {
+        return state.mpu6050.temp;
+      }
+      return null;
     },
   },
 };

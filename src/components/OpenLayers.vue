@@ -31,7 +31,10 @@ export default {
   },
   computed: {
     location() {
-      return [state.location.longitude, state.location.latitude];
+      if (state.gps && state.gps.latitude && state.gps.longitude) {
+        return [state.gps.longitude, state.gps.latitude];
+      }
+      return [0, 0];
     },
   },
   data() {

@@ -4,13 +4,20 @@
     <div v-else>
       <p>
         <span v-if="online">{{ $t("system.connected") }}</span>
-        <span v-else>{{ $t("system.disconnected") }}</span>
+        <span v-else
+          >{{ $t("system.disconnected")
+          }}<span v-if="lastConnection">
+            ({{
+              $t("since", { date: lastConnection[0], time: lastConnection[1] })
+            }})</span
+          ></span
+        >
         <span v-if="ping && online"> ({{ ping }} ms)</span>
       </p>
-      <p v-if="shutter && online" id="shutter">
+      <p v-if="shutter === true" id="shutter">
         <span />{{ $t("shutter.record") }}
       </p>
-      <p v-else-if="online">{{ $t("shutter.standby") }}</p>
+      <p v-else-if="shutter === false">{{ $t("shutter.standby") }}</p>
     </div>
   </header>
 </template>
@@ -32,6 +39,12 @@ export default {
     },
     shutter() {
       return state.shutter;
+    },
+    lastConnection() {
+      if (state.lastConnection) {
+        return new Date(state.lastConnection).toLocaleString().split(" ");
+      }
+      return null;
     },
   },
 };

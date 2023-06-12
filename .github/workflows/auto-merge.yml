@@ -1,4 +1,4 @@
-name: Add merge comment to Dependabot PRs
+name: Merge Dependabot PRs
 
 on:
   pull_request:

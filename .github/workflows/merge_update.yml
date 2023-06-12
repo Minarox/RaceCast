@@ -1,4 +1,4 @@
-name: Add comment to successful Dependabot PRs
+name: Merge Dependabot PRs
 
 on:
   workflow_run:

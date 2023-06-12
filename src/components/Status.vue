@@ -16,7 +16,6 @@
       </p>
       <p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>
       <p v-else-if="lastConnection">{{ $t("shutter.standby") }}</p>
-      {{ shutter }}
     </div>
   </header>
 </template>

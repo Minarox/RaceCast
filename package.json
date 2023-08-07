@@ -33,7 +33,7 @@
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^8.46.0",
-    "eslint-config-prettier": "^8.9.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^9.16.1",
     "prettier": "^2.4.1",

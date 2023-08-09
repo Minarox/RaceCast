@@ -1,6 +1,12 @@
 <template>
   <section>
-    <video autoplay controls />
+    <iframe
+      allowfullscreen="true"
+      frameborder="0"
+      mozallowfullscreen="true"
+      src="https://rallye.minarox.fr/watch.html"
+      webkitallowfullscreen="true"
+    ></iframe>
   </section>
 </template>
 
@@ -20,13 +26,9 @@ section {
   overflow: hidden;
   position: relative;
 
-  video {
-    bottom: 0;
+  iframe {
+    border: none;
     height: 100%;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
     width: 100%;
   }
 }

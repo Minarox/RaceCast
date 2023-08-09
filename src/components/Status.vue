@@ -14,8 +14,8 @@
         </span>
         <span v-if="ping && online"> ({{ ping }} ms)</span>
       </p>
-      <p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>
-      <p v-else-if="lastConnection">{{ $t("shutter.standby") }}</p>
+      <!--<p v-if="shutter" id="shutter"><span />{{ $t("shutter.record") }}</p>-->
+      <!--<p v-else-if="lastConnection">{{ $t("shutter.standby") }}</p>-->
     </div>
   </header>
 </template>
@@ -35,9 +35,9 @@ export default {
     ping() {
       return state.ping;
     },
-    shutter() {
+    /*shutter() {
       return state.shutter;
-    },
+    },*/
     lastConnection() {
       if (state.lastConnection) {
         return new Date(state.lastConnection).toLocaleString().split(" ");

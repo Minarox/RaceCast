@@ -6,7 +6,8 @@ export const state = reactive({
   online: false,
   mpu6050: null,
   gps: null,
-  shutter: false,
+  // shutter: false,
+  stream: false,
   ping: null,
   lastConnection: null,
 });
@@ -40,8 +41,12 @@ socket.on("gps", (data) => {
   state.gps = data;
 });
 
-socket.on("shutter", (boolean) => {
+/*socket.on("shutter", (boolean) => {
   state.shutter = boolean;
+});*/
+
+socket.on("stream", (boolean) => {
+  state.stream = boolean;
 });
 
 socket.on("latency", (value) => {

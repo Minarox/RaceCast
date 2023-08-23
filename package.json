@@ -20,10 +20,12 @@
     "lint:check": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src/"
   },
   "dependencies": {
+    "socket.io-client": "4.7.2",
     "vue": "^3.3.4"
   },
   "devDependencies": {
     "@types/node": "20.5.3",
+    "@types/socket.io-client": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "6.4.1",
     "@typescript-eslint/parser": "6.4.1",
     "@vitejs/plugin-vue": "^4.2.3",

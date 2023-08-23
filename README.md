@@ -13,7 +13,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/RaceCast/Front-End/node.js.yml?label=Build)
 
   <p align="center">
-    User interface for displaying race car data.
+    Interface for displaying race car data.
     <br />
     <a href="https://rallye.minarox.fr/"><strong>rallye.minarox.fr »</strong></a>
   </p>
@@ -60,10 +60,10 @@ User interface gathering the information and the video stream returned by the on
 ### Tech Stack
 
 - [VueJS](https://vuejs.org/)
-  - [Sass](https://sass-lang.com/)
-  - [EsLint](https://eslint.org/)
-  - [Prettier](https://prettier.io/)
-  - [Register Service Worker](https://www.npmjs.com/package/register-service-worker)
+    - [Sass](https://sass-lang.com/)
+    - [EsLint](https://eslint.org/)
+    - [Prettier](https://prettier.io/)
+    - [Register Service Worker](https://www.npmjs.com/package/register-service-worker)
 - [Socket.io](https://socket.io/)
 - [OpenLayers](https://openlayers.org/)
 - [Chart.js](https://www.chartjs.org/)

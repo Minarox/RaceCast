@@ -5,7 +5,3 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
-
-interface ImportMetaEnv {
-  VITE_BASE_URL: string;
-}

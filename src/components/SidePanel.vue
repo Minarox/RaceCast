@@ -2,10 +2,11 @@
   import Status from "@/components/Status.vue";
   import State from "@/components/State.vue";
   import OpenLayers from "@/components/OpenLayers.vue";
+  import StreamSettings from "@/components/StreamSettings.vue";
 
   export default {
     name: "SidePanel",
-    components: { Status, State, OpenLayers },
+    components: { Status, State, StreamSettings, OpenLayers },
     data() {
       return {
         open: true,
@@ -18,6 +19,7 @@
   <aside :class="open ? 'opened' : ''">
     <Status />
     <State />
+    <StreamSettings />
     <OpenLayers />
   </aside>
 </template>

@@ -7,21 +7,14 @@
     components: { Status, State },
     data() {
       return {
-        open: false,
+        open: true,
       };
-    },
-    watch: {
-      open() {
-        setTimeout(() => {
-          this.open = false;
-        }, 500);
-      },
     },
   };
 </script>
 
 <template>
-  <aside :class="open ? 'opened' : ''" @click="open = !open">
+  <aside :class="open ? 'opened' : ''">
     <Status />
     <State />
   </aside>
@@ -43,12 +36,13 @@
     position: absolute;
     right: 0;
     top: 0;
+    transform: translateX(calc(320px + 4rem));
     transition: transform 0.3s ease-in-out;
-    width: 300px;
+    width: 320px;
     z-index: 100;
 
     &.opened {
-      transform: translateX(calc(300px + 4rem));
+      transform: translateX(0);
     }
 
     > article {

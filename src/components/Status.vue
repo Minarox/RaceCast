@@ -1,0 +1,111 @@
+<script lang="ts">
+  import { state } from "../socket";
+
+  export default {
+    name: "SystemStatus",
+    computed: {
+      online() {
+        return state.online;
+      },
+      status() {
+        return state.status;
+      },
+      lastConnection() {
+        if (state.status.lastConnection) {
+          return new Date(state.status.lastConnection)
+            .toLocaleString()
+            .split(" ");
+        }
+        return null;
+      },
+    },
+  };
+</script>
+
+<template>
+  <article :class="online && status.online ? 'green-border' : 'red-border'">
+    <TransitionGroup name="status">
+      <section v-if="online">
+        <p v-if="status.online">
+          Connecté
+          <span v-if="status.latency">{{ status.latency }}ms</span>
+          <span v-else>Désynchronisé</span>
+        </p>
+        <p v-else>
+          Système déconnecté
+          <span v-if="lastConnection">
+            <br />
+            depuis le {{ lastConnection[0] }} à {{ lastConnection[1] }}
+          </span>
+        </p>
+      </section>
+      <section v-else>
+        <p>Déconnecté du serveur</p>
+      </section>
+    </TransitionGroup>
+  </article>
+</template>
+
+<style lang="scss" scoped>
+  article {
+    height: 48px;
+    padding: 0.8rem 0;
+
+    p {
+      font-size: 1.24em;
+      font-weight: bold;
+      line-height: 1.2em;
+      text-align: center;
+
+      span {
+        font-size: 0.78em;
+        font-weight: normal;
+      }
+    }
+  }
+
+  .green-border {
+    animation: fade 3s ease-out forwards;
+    box-shadow: inset 0 0 14px green;
+
+    @keyframes fade {
+      0% {
+        box-shadow: inset 0 0 14px green;
+      }
+      50% {
+        box-shadow: inset 0 0 14px green;
+      }
+      100% {
+        box-shadow: inset 0 0 0 green;
+      }
+    }
+  }
+
+  .red-border {
+    animation: pulse 2s linear infinite alternate;
+    box-shadow: inset 0 0 0 3px #d20000;
+
+    @keyframes pulse {
+      from {
+        box-shadow: inset 0 0 0 3px #d20000;
+      }
+      to {
+        box-shadow: inset 0 0 14px 3px #d20000;
+      }
+    }
+  }
+
+  .status-enter-active,
+  .status-leave-active {
+    transition: all 0.15s ease-in-out;
+  }
+
+  .status-enter-from,
+  .status-leave-to {
+    opacity: 0;
+  }
+
+  .status-leave-active {
+    position: absolute;
+  }
+</style>

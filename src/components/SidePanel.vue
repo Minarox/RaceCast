@@ -1,10 +1,11 @@
 <script lang="ts">
   import Status from "@/components/Status.vue";
   import State from "@/components/State.vue";
+  import OpenLayers from "@/components/OpenLayers.vue";
 
   export default {
     name: "SidePanel",
-    components: { Status, State },
+    components: { Status, State, OpenLayers },
     data() {
       return {
         open: true,
@@ -17,6 +18,7 @@
   <aside :class="open ? 'opened' : ''">
     <Status />
     <State />
+    <OpenLayers />
   </aside>
 </template>
 
@@ -52,6 +54,7 @@
       color: #242424;
       display: flex;
       justify-content: center;
+      overflow: hidden;
       width: 100%;
     }
   }

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { state } from "../socket";
+  import { state, Status } from "../socket";
 
   export default {
     name: "SystemStatus",
     computed: {
-      online() {
+      online(): boolean {
         return state.online;
       },
-      status() {
+      status(): Status {
         return state.status;
       },
-      lastConnection() {
+      lastConnection(): string[] | null {
         if (state.status.lastConnection) {
           return new Date(state.status.lastConnection)
             .toLocaleString()

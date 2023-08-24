@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { state } from "../socket";
+  import { state, State } from "../socket";
 
   export default {
     name: "DataSate",
     computed: {
-      state() {
+      state(): State {
         return state.data.state;
       },
     },

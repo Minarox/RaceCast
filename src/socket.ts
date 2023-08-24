@@ -2,27 +2,27 @@ import { reactive } from "vue";
 import io from "socket.io-client";
 
 // Define interfaces
-interface Data {
+export interface Data {
   mpu6050: Mpu6050 | null;
   gps: Gps | null;
   state: State;
 }
 
-interface State {
+export interface State {
   online?: boolean;
   mpu6050: boolean;
   gps: boolean;
   webrtc: boolean;
 }
 
-interface Gps {
+export interface Gps {
   latitude: number;
   longitude: number;
   altitude: number;
   speed: number;
 }
 
-interface Mpu6050 {
+export interface Mpu6050 {
   gyro: {
     x: number;
     y: number;
@@ -40,7 +40,7 @@ interface Mpu6050 {
   temp: number;
 }
 
-interface Status {
+export interface Status {
   socket: string | null;
   online: boolean;
   latency: number | null;

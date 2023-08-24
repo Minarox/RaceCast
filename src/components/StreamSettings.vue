@@ -33,8 +33,8 @@
 
 <style lang="scss" scoped>
   article {
-    padding: 0.3rem 0.5rem 0.5rem;
-    width: calc(100% - 1rem) !important;
+    padding: 0.4rem;
+    width: calc(100% - 0.8rem) !important;
 
     form {
       display: grid;
@@ -48,12 +48,12 @@
 
         label {
           font-size: 0.9em;
+          line-height: 1em;
           margin: 0 0 0.2rem 0.2rem;
         }
 
         select {
           background-color: white;
-          border: 1px solid #242424;
           border-radius: 4px;
           color: #242424;
           outline: none;

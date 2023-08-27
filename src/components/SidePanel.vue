@@ -1,12 +1,14 @@
 <script lang="ts">
   import Status from "@/components/Status.vue";
   import State from "@/components/State.vue";
-  import OpenLayers from "@/components/OpenLayers.vue";
   import StreamSettings from "@/components/StreamSettings.vue";
+  import OpenLayers from "@/components/OpenLayers.vue";
+  import Speed from "@/components/Speed.vue";
+  import Inertial from "@/components/Inertial.vue";
 
   export default {
     name: "SidePanel",
-    components: { Status, State, StreamSettings, OpenLayers },
+    components: { Status, State, StreamSettings, OpenLayers, Speed, Inertial },
     data() {
       return {
         open: true,
@@ -21,6 +23,8 @@
     <State />
     <StreamSettings />
     <OpenLayers />
+    <Speed />
+    <Inertial />
   </aside>
 </template>
 

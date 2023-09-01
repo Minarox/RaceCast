@@ -24,7 +24,7 @@
           chart: {
             type: "areaspline",
             height: null,
-            spacing: [12, 10, 4, 10],
+            spacing: [12, 10, 12, 10],
             backgroundColor: "transparent",
             animation: true,
           },
@@ -36,16 +36,12 @@
             tickPixelInterval: 150,
           },
           yAxis: {
+            max: 200,
+            gridLineColor: "#c0c0c0",
+            gridLineWidth: 1,
             title: {
               text: null,
             },
-            plotLines: [
-              {
-                value: 0,
-                width: 1,
-                color: "#808080",
-              },
-            ],
           },
           tooltip: {
             headerFormat: "",

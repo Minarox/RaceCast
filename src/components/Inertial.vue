@@ -4,7 +4,7 @@
   export default {
     name: "InertialData",
     data() {
-      const options = {
+      const options: object = {
         lang: {
           noData: "Aucune donnée",
         },
@@ -114,7 +114,7 @@
       };
     },
     computed: {
-      accelerometer() {
+      accelerometer(): { x: number; y: number; z: number } | null {
         if (state.data.mpu6050) {
           return {
             x: state.data.mpu6050.accel.x,
@@ -124,7 +124,7 @@
         }
         return null;
       },
-      gyroscope() {
+      gyroscope(): { x: number; y: number } | null {
         if (state.data.mpu6050) {
           return {
             x: state.data.mpu6050.gyro.y,
@@ -135,14 +135,14 @@
       },
     },
     watch: {
-      accelerometer(value) {
+      accelerometer(value): void {
         this.accelChart.series[0].data = [value];
       },
-      gyroscope(value) {
+      gyroscope(value): void {
         this.gyroChart.series[0].data = [value];
       },
     },
-    mounted() {
+    mounted(): void {
       ["mouseup", "touchend"].forEach((type) => {
         document.addEventListener(type, this.release, {
           passive: true,
@@ -157,7 +157,7 @@
       });
     },
     methods: {
-      click(event) {
+      click(event: MouseEvent | TouchEvent): void {
         this.element = event.target;
         while (this.element.id !== "accel-chart") {
           this.element = this.element.parentNode;
@@ -174,7 +174,7 @@
           });
         });
       },
-      drag(event) {
+      drag(event: MouseEvent | TouchEvent): void {
         if (this.animation) {
           this.animation = false;
 
@@ -195,7 +195,7 @@
           });
         }
       },
-      release() {
+      release(): void {
         ["mousemove", "touchmove"].forEach((type) => {
           document.removeEventListener(type, this.drag, {
             passive: true,

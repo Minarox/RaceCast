@@ -160,17 +160,15 @@
       };
     },
     computed: {
-      speed() {
-        if (state.data.gps) {
-          return state.data.gps.speed;
-        }
+      speed(): number | null {
+        if (state.data.gps) return state.data.gps.speed;
         return null;
       },
     },
     watch: {
       speed: {
         deep: true,
-        handler(value) {
+        handler(value): void {
           this.speedometer.series[0].data = [parseInt(value)];
 
           this.histogram.series[0].data.push([

@@ -46,7 +46,7 @@
     top: 0;
     transform: translateX(calc(320px + 4rem));
     transition: transform 0.3s ease-in-out;
-    width: 320px;
+    width: 380px;
     z-index: 100;
 
     &.opened {

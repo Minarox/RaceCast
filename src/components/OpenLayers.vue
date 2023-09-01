@@ -40,7 +40,7 @@
       },
     },
     watch: {
-      location(position) {
+      location(position: [number, number]) {
         this.map
           .getLayers()
           .getArray()[1]

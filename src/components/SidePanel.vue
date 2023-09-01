@@ -25,6 +25,9 @@
     <OpenLayers />
     <Speed />
     <Inertial />
+    <div @click.prevent="open = !open">
+      <img :class="open ? 'opened' : ''" alt="Arrow" src="@/assets/arrow.svg" />
+    </div>
   </aside>
 </template>
 
@@ -44,7 +47,7 @@
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(calc(320px + 4rem));
+    transform: translateX(calc(380px + 3rem));
     transition: transform 0.3s ease-in-out;
     width: 380px;
     z-index: 100;
@@ -62,6 +65,32 @@
       justify-content: center;
       overflow: hidden;
       width: 100%;
+    }
+
+    > div {
+      align-items: center;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      height: 36px;
+      justify-content: center;
+      padding: 14rem 0.6rem 14rem 2rem;
+      position: absolute;
+      right: calc(380px + 2rem);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+
+      img {
+        height: 100%;
+        transform: rotate(180deg);
+        transition: transform 180ms ease-in-out;
+        width: 100%;
+
+        &.opened {
+          transform: rotate(0deg);
+        }
+      }
     }
   }
 </style>

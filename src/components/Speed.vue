@@ -194,7 +194,7 @@
 
 <style lang="scss" scoped>
   article {
-    height: 200px;
+    height: 180px;
     width: 100%;
 
     > * {

@@ -154,6 +154,6 @@
 
 <style lang="scss" scoped>
   article {
-    height: 350px;
+    flex: 1;
   }
 </style>

@@ -149,9 +149,9 @@
         });
       });
       ["mousedown", "touchstart"].forEach((type) => {
-        document
-          .getElementById("accel-chart")
-          .addEventListener(type, this.click, {
+        const element = document.getElementById("accel-chart");
+        if (element)
+          element.addEventListener(type, this.click, {
             passive: true,
           });
       });

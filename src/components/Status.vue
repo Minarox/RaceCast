@@ -28,6 +28,7 @@
       <section v-if="online">
         <p v-if="status.online">
           Connecté
+          <br />
           <span v-if="status.latency">{{ status.latency }}ms</span>
           <span v-else>Désynchronisé</span>
         </p>
@@ -48,7 +49,7 @@
 
 <style lang="scss" scoped>
   article {
-    height: 48px;
+    height: 52px;
     padding: 0.8rem 0;
 
     p {

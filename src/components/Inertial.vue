@@ -14,9 +14,6 @@
         legend: {
           enabled: false,
         },
-        /*tooltip: {
-          enabled: false,
-        },*/
         plotOptions: {
           series: {
             marker: {
@@ -27,7 +24,10 @@
       };
       return {
         element: null,
-        pose: null,
+        pose: {
+          x: 0,
+          y: 0,
+        },
         animation: true,
         accelChart: {
           ...options,
@@ -133,6 +133,12 @@
         }
         return null;
       },
+      temperature(): number | null {
+        if (state.data.mpu6050) {
+          return state.data.mpu6050.temp;
+        }
+        return null;
+      },
     },
     watch: {
       accelerometer(value): void {
@@ -201,7 +207,11 @@
             passive: true,
           });
         });
-        this.pose = this.element = null;
+        this.pose = {
+          x: 0,
+          y: 0,
+        };
+        this.element = null;
       },
     },
   };
@@ -209,22 +219,51 @@
 
 <template>
   <article>
-    <highcharts id="accel-chart" :options="accelChart" />
-    <highcharts :options="gyroChart" />
+    <section>
+      <highcharts id="accel-chart" :options="accelChart" />
+      <highcharts :options="gyroChart" />
+    </section>
+    <hr />
+    <section>
+      <p>Température : {{ temperature }}</p>
+    </section>
   </article>
 </template>
 
 <style lang="scss" scoped>
   article {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(2, 1fr);
-    height: 200px;
+    align-items: center;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    padding-bottom: 0.4rem;
     width: 100%;
 
-    > * {
-      height: inherit;
+    section {
       width: 100%;
+
+      &:first-child {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        height: 190px;
+
+        > * {
+          height: inherit;
+          width: 100%;
+        }
+      }
+
+      &:last-child {
+        text-align: center;
+      }
+    }
+
+    hr {
+      border: none;
+      border-bottom: 2px solid #888888;
+      border-radius: 100%;
+      margin: 0.4rem 0;
+      width: 80%;
     }
   }
 </style>

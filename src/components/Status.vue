@@ -24,7 +24,7 @@
 
 <template>
   <article :class="online && status.online ? 'green-border' : 'red-border'">
-    <TransitionGroup name="status">
+    <TransitionGroup name="fade">
       <section v-if="online">
         <p v-if="status.online">
           Connecté
@@ -81,19 +81,5 @@
         box-shadow: inset 0 0 14px 3px #d20000;
       }
     }
-  }
-
-  .status-enter-active,
-  .status-leave-active {
-    transition: all 0.15s ease-in-out;
-  }
-
-  .status-enter-from,
-  .status-leave-to {
-    opacity: 0;
-  }
-
-  .status-leave-active {
-    position: absolute;
   }
 </style>

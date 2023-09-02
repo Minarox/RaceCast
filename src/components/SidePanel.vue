@@ -5,10 +5,19 @@
   import OpenLayers from "@/components/OpenLayers.vue";
   import Speed from "@/components/Speed.vue";
   import Inertial from "@/components/Inertial.vue";
+  import Speedometer from "@/components/Speedometer.vue";
 
   export default {
     name: "SidePanel",
-    components: { Status, State, StreamSettings, OpenLayers, Speed, Inertial },
+    components: {
+      Speedometer,
+      Status,
+      State,
+      StreamSettings,
+      OpenLayers,
+      Speed,
+      Inertial,
+    },
     data() {
       return {
         open: true,
@@ -25,8 +34,11 @@
     <OpenLayers />
     <Speed />
     <Inertial />
-    <div @click.prevent="open = !open">
+    <div id="arrow" @click.prevent="open = !open">
       <img :class="open ? 'opened' : ''" alt="Arrow" src="@/assets/arrow.svg" />
+    </div>
+    <div id="speed">
+      <Speedometer />
     </div>
   </aside>
 </template>
@@ -67,7 +79,7 @@
       width: 100%;
     }
 
-    > div {
+    > #arrow {
       align-items: center;
       border-radius: 8px;
       cursor: pointer;
@@ -91,6 +103,19 @@
           transform: rotate(0deg);
         }
       }
+    }
+
+    > #speed {
+      align-items: center;
+      border-radius: 8px;
+      bottom: -2rem;
+      display: flex;
+      height: 220px;
+      justify-content: center;
+      pointer-events: none;
+      position: absolute;
+      right: calc(380px + 3rem);
+      width: 260px;
     }
   }
 </style>

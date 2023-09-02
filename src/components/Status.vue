@@ -66,20 +66,7 @@
   }
 
   .green-border {
-    animation: fade 3s ease-out forwards;
     box-shadow: inset 0 0 14px green;
-
-    @keyframes fade {
-      0% {
-        box-shadow: inset 0 0 14px green;
-      }
-      50% {
-        box-shadow: inset 0 0 14px green;
-      }
-      100% {
-        box-shadow: inset 0 0 0 green;
-      }
-    }
   }
 
   .red-border {

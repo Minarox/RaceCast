@@ -78,3 +78,17 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.15s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-leave-active {
+    position: absolute;
+}

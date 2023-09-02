@@ -65,94 +65,6 @@
             },
           ],
         },
-        speedometer: {
-          ...options,
-          chart: {
-            type: "gauge",
-            height: null,
-            spacing: [10, 26, 0, 26],
-            backgroundColor: "transparent",
-            animation: true,
-          },
-          tooltip: {
-            enabled: false,
-          },
-          plotOptions: {
-            series: {
-              enableMouseTracking: false,
-            },
-          },
-          pane: {
-            startAngle: -90,
-            endAngle: 90,
-            background: null,
-          },
-          yAxis: {
-            min: 0,
-            max: 200,
-            tickPixelInterval: 60,
-            minorTickInterval: null,
-            tickPosition: "inside",
-            tickColor: "#FFFFFF",
-            tickLength: 20,
-            tickWidth: 2,
-            labels: {
-              distance: 16,
-              style: {
-                fontSize: "14px",
-              },
-            },
-            lineWidth: 0,
-            plotBands: [
-              {
-                from: 0,
-                to: 120,
-                color: "#55BF3B",
-                thickness: 20,
-              },
-              {
-                from: 120,
-                to: 160,
-                color: "#DDDF0D",
-                thickness: 20,
-              },
-              {
-                from: 160,
-                to: 200,
-                color: "#DF5353",
-                thickness: 20,
-              },
-            ],
-          },
-          series: [
-            {
-              name: "data",
-              data: [0],
-              tooltip: {
-                valueSuffix: " km/h",
-              },
-              dataLabels: {
-                format: "{y} km/h",
-                borderWidth: 0,
-                color: "#333333",
-                style: {
-                  fontSize: "2.3em",
-                },
-              },
-              dial: {
-                radius: "80%",
-                backgroundColor: "gray",
-                baseWidth: 12,
-                baseLength: "0%",
-                rearLength: "0%",
-              },
-              pivot: {
-                backgroundColor: "gray",
-                radius: 6,
-              },
-            },
-          ],
-        },
       };
     },
     computed: {
@@ -165,8 +77,6 @@
       speed: {
         deep: true,
         handler(value): void {
-          this.speedometer.series[0].data = [parseInt(value)];
-
           this.histogram.series[0].data.push([
             new Date().getTime() + 2 * 60 * 60 * 1000,
             value,

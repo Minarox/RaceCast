@@ -5,11 +5,17 @@
 </script>
 
 <template>
-  <video autoplay controls muted playsinline></video>
+  <iframe
+    allowfullscreen="true"
+    frameborder="0"
+    mozallowfullscreen="true"
+    src="https://rallye.minarox.fr/watch.html"
+    webkitallowfullscreen="true"
+  ></iframe>
 </template>
 
 <style lang="scss" scoped>
-  video {
+  iframe {
     bottom: 0;
     height: 100%;
     left: 0;

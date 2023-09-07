@@ -228,6 +228,7 @@
     align-items: center;
     display: flex;
     flex-flow: column nowrap;
+    height: 240px;
     justify-content: center;
     padding-bottom: 0.4rem;
     width: 100%;

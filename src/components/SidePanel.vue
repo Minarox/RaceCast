@@ -110,6 +110,10 @@
         transition: transform 180ms ease-in-out;
         width: 36px;
 
+        @media (prefers-color-scheme: light) {
+          filter: invert(1);
+        }
+
         &.opened {
           transform: rotate(0deg);
         }

@@ -64,6 +64,14 @@ button:focus-visible {
     width: 100vw;
 }
 
+video {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         background-color: #ffffff;

@@ -3,6 +3,13 @@
 
   export default {
     name: "DataSate",
+    props: {
+      webrtc: {
+        type: Boolean,
+        default: false,
+        required: true,
+      },
+    },
     computed: {
       state(): State {
         return state.data.state;
@@ -15,7 +22,7 @@
   <article>
     <p :class="state.mpu6050 ? 'green' : 'red'">MPU6050</p>
     <p :class="state.gps ? 'green' : 'red'">GPS</p>
-    <p :class="state.webrtc ? 'green' : 'red'">WebRTC</p>
+    <p :class="webrtc ? 'green' : 'red'">Video</p>
   </article>
 </template>
 

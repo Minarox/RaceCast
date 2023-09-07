@@ -18,9 +18,16 @@
       Speed,
       Inertial,
     },
+    props: {
+      webrtc: {
+        type: Boolean,
+        default: false,
+        required: true,
+      },
+    },
     data() {
       return {
-        open: true,
+        open: false as boolean,
       };
     },
   };
@@ -28,12 +35,14 @@
 
 <template>
   <aside :class="open ? 'opened' : ''">
-    <Status />
-    <State />
-    <StreamSettings />
-    <OpenLayers />
-    <Speed />
-    <Inertial />
+    <div id="wrapper">
+      <Status />
+      <State :webrtc="webrtc" />
+      <StreamSettings />
+      <OpenLayers />
+      <Speed />
+      <Inertial />
+    </div>
     <div id="arrow" @click.prevent="open = !open">
       <img :class="open ? 'opened' : ''" alt="Arrow" src="@/assets/arrow.svg" />
     </div>
@@ -45,17 +54,8 @@
 
 <style lang="scss" scoped>
   aside {
-    align-items: center;
-    backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
     bottom: 0;
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 0.8rem;
-    justify-content: flex-start;
-    margin: 1rem;
-    padding: 1rem;
+    margin: 0.8rem;
     position: absolute;
     right: 0;
     top: 0;
@@ -68,15 +68,28 @@
       transform: translateX(0);
     }
 
-    > article {
+    > #wrapper {
       align-items: center;
-      background-color: rgba(255, 255, 255, 0.87);
-      border-radius: 6px;
-      color: #242424;
+      backdrop-filter: blur(4px);
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
       display: flex;
-      justify-content: center;
-      overflow: hidden;
-      width: 100%;
+      flex-flow: column nowrap;
+      gap: 0.8rem;
+      height: 100%;
+      justify-content: flex-start;
+      overflow-y: overlay;
+      padding: 1rem;
+
+      > article {
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.87);
+        border-radius: 6px;
+        color: #242424;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
     }
 
     > #arrow {

@@ -1,7 +1,6 @@
 <script lang="ts">
   import Status from "@/components/Status.vue";
   import State from "@/components/State.vue";
-  import StreamSettings from "@/components/StreamSettings.vue";
   import OpenLayers from "@/components/OpenLayers.vue";
   import Speed from "@/components/Speed.vue";
   import Inertial from "@/components/Inertial.vue";
@@ -13,7 +12,6 @@
       Speedometer,
       Status,
       State,
-      StreamSettings,
       OpenLayers,
       Speed,
       Inertial,
@@ -38,7 +36,6 @@
     <div id="wrapper">
       <Status />
       <State :webrtc="webrtc" />
-      <StreamSettings />
       <OpenLayers />
       <Speed />
       <Inertial />

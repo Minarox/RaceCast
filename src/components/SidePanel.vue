@@ -105,14 +105,10 @@
       transform: translateY(-50%);
 
       img {
-        height: 36px;
+        height: 40px;
         transform: rotate(180deg);
         transition: transform 180ms ease-in-out;
-        width: 36px;
-
-        @media (prefers-color-scheme: light) {
-          filter: invert(1);
-        }
+        width: 40px;
 
         &.opened {
           transform: rotate(0deg);

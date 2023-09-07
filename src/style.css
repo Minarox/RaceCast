@@ -14,6 +14,12 @@
     -webkit-text-size-adjust: 100%;
 }
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 a {
     color: #646cff;
     font-weight: 500;
@@ -25,17 +31,12 @@ a:hover {
 }
 
 body {
-    margin: 0;
     overflow: hidden;
 }
 
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
-}
-
-p {
-    margin: 0;
 }
 
 button {

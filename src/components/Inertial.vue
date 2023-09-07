@@ -116,20 +116,13 @@
     computed: {
       accelerometer(): { x: number; y: number; z: number } | null {
         if (state.data.mpu6050) {
-          return {
-            x: state.data.mpu6050.accel.x,
-            y: state.data.mpu6050.accel.z * -1,
-            z: state.data.mpu6050.accel.y,
-          };
+          return state.data.mpu6050.accel;
         }
         return null;
       },
       gyroscope(): { x: number; y: number } | null {
         if (state.data.mpu6050) {
-          return {
-            x: state.data.mpu6050.gyro.y,
-            y: state.data.mpu6050.gyro.x * -1,
-          };
+          return state.data.mpu6050.gyro;
         }
         return null;
       },

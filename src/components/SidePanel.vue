@@ -23,10 +23,24 @@
         required: true,
       },
     },
+    emits: ["lock"],
     data() {
       return {
         open: false as boolean,
+        lock: false as boolean,
       };
+    },
+    watch: {
+      lock(boolean) {
+        if (boolean) this.open = true;
+        this.$emit("lock", boolean);
+      },
+    },
+    methods: {
+      toggle() {
+        if (this.lock) return;
+        this.open = !this.open;
+      },
     },
   };
 </script>
@@ -40,7 +54,13 @@
       <Speed />
       <Inertial />
     </div>
-    <div id="arrow" @click.prevent="open = !open">
+    <div id="pin" @click.prevent="lock = !lock">
+      <Transition name="fade">
+        <img v-if="lock" alt="Locked" src="@/assets/lock-solid.svg" />
+        <img v-else alt="Unlocked" src="@/assets/unlock-solid.svg" />
+      </Transition>
+    </div>
+    <div id="arrow" @click.prevent="toggle">
       <img :class="open ? 'opened' : ''" alt="Arrow" src="@/assets/arrow.svg" />
     </div>
     <div id="speed">
@@ -56,7 +76,7 @@
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(calc(380px + 0.8rem));
+    transform: translateX(calc(380px + 0.8rem * 2));
     transition: transform 0.3s ease-in-out;
     width: 380px;
     z-index: 100;
@@ -89,7 +109,8 @@
       }
     }
 
-    > #arrow {
+    > #arrow,
+    > #pin {
       align-items: center;
       border-radius: 8px;
       cursor: pointer;
@@ -97,7 +118,7 @@
       justify-content: center;
       padding: 14rem 0.6rem 14rem 2rem;
       position: absolute;
-      right: 380px;
+      right: calc(380px + 0.8rem);
       top: 50%;
       transform: translateY(-50%);
 
@@ -113,6 +134,18 @@
       }
     }
 
+    > #pin {
+      padding: 0.6rem 0.8rem 2rem 2rem;
+      top: 0;
+      transform: translateY(0);
+
+      img {
+        height: 26px;
+        transform: rotate(0deg);
+        width: 26px;
+      }
+    }
+
     > #speed {
       align-items: center;
       border-radius: 8px;
@@ -122,7 +155,7 @@
       justify-content: center;
       pointer-events: none;
       position: absolute;
-      right: calc(380px + 1rem);
+      right: calc(380px + 0.8rem);
       width: 260px;
     }
   }

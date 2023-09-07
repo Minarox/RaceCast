@@ -10,7 +10,7 @@ import highchartsMore from "highcharts/highcharts-more";
 import highcharts3d from "highcharts/highcharts-3d";
 import highchartsNoData from "highcharts/modules/no-data-to-display";
 
-registerSW({ immediate: true });
+registerSW();
 
 highchartsMore(Highcharts);
 highcharts3d(Highcharts);

@@ -24,9 +24,9 @@
     display: grid !important;
     gap: 0.4rem;
     grid-template-columns: repeat(3, 1fr);
+    height: 41px;
     justify-items: center;
     padding: 0.4rem;
-    width: calc(100% - 0.8rem) !important;
 
     p {
       border-radius: 4px;

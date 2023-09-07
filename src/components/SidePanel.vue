@@ -59,7 +59,7 @@
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(calc(380px + 3rem));
+    transform: translateX(calc(380px + 0.8rem));
     transition: transform 0.3s ease-in-out;
     width: 380px;
     z-index: 100;
@@ -84,20 +84,18 @@
       border-radius: 8px;
       cursor: pointer;
       display: flex;
-      height: 36px;
       justify-content: center;
       padding: 14rem 0.6rem 14rem 2rem;
       position: absolute;
-      right: calc(380px + 2rem);
+      right: 380px;
       top: 50%;
       transform: translateY(-50%);
-      width: 36px;
 
       img {
-        height: 100%;
+        height: 36px;
         transform: rotate(180deg);
         transition: transform 180ms ease-in-out;
-        width: 100%;
+        width: 36px;
 
         &.opened {
           transform: rotate(0deg);
@@ -114,7 +112,7 @@
       justify-content: center;
       pointer-events: none;
       position: absolute;
-      right: calc(380px + 3rem);
+      right: calc(380px + 1rem);
       width: 260px;
     }
   }

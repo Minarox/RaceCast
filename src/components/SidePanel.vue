@@ -66,6 +66,7 @@
     <div id="speed">
       <Speedometer />
     </div>
+    <span v-if="open && !lock" id="close" @click.prevent="toggle" />
   </aside>
 </template>
 
@@ -157,6 +158,15 @@
       position: absolute;
       right: calc(380px + 0.8rem);
       width: 260px;
+    }
+
+    #close {
+      height: 100vh;
+      position: absolute;
+      right: calc(380px + 0.8rem);
+      top: -0.8rem;
+      width: calc(100vw - 380px - 0.8rem * 2);
+      z-index: -1;
     }
   }
 </style>

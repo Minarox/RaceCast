@@ -3,7 +3,14 @@
 
   export default {
     name: "PlayerComponent",
-    emits: { webrtc: null },
+    props: {
+      lock: {
+        type: Boolean,
+        default: false,
+        required: true,
+      },
+    },
+    emits: ["webrtc"],
     data() {
       return {
         play: false as boolean,
@@ -82,8 +89,14 @@
 </script>
 
 <template>
-  <button v-if="!play" @click.prevent="requestToken">Lancer le direct</button>
-  <div id="wrapper"></div>
+  <button
+    v-if="!play"
+    :class="lock ? 'reduce' : ''"
+    @click.prevent="requestToken"
+  >
+    Lancer le direct
+  </button>
+  <div id="wrapper" :class="lock ? 'reduce' : ''"></div>
 </template>
 
 <style lang="scss" scoped>
@@ -92,11 +105,21 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
+    transition: left 0.3s ease-in-out;
     z-index: 100;
+
+    &.reduce {
+      left: calc(50% - 180px);
+    }
   }
 
   #wrapper {
     height: 100%;
+    transition: width 0.3s ease-in-out;
     width: 100%;
+
+    &.reduce {
+      width: calc(100% - 380px - 0.8rem * 2);
+    }
   }
 </style>

@@ -11,17 +11,21 @@
     data() {
       return {
         webrtc: false as boolean,
+        lock: false as boolean,
       };
     },
     methods: {
       webrtcHandler(value: boolean) {
         this.webrtc = value;
       },
+      lockHandler(value: boolean) {
+        this.lock = value;
+      },
     },
   };
 </script>
 
 <template>
-  <Player @webrtc="webrtcHandler" />
-  <SidePanel :webrtc="webrtc" />
+  <Player :lock="lock" @webrtc="webrtcHandler" />
+  <SidePanel :webrtc="webrtc" @lock="lockHandler" />
 </template>

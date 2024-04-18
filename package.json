@@ -22,7 +22,7 @@
   "dependencies": {
     "highcharts": "^11.4.1",
     "highcharts-vue": "^2.0.1",
-    "livekit-client": "^2.0.10",
+    "livekit-client": "^2.1.0",
     "livekit-server-sdk": "^2.1.2",
     "ol": "^9.1.0",
     "vue": "^3.4.23",

@@ -45,7 +45,7 @@
     "livekit-client": "^2.16.1",
     "livekit-server-sdk": "^2.15.0",
     "ol": "^10.7.0",
-    "vue": "^3.5.25"
+    "vue": "^3.5.26"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

@@ -11,7 +11,7 @@
 
     function metadataHandler(event: any) {
         const metadata: Metadata = event.detail
-        const speed = metadata.location.speed
+        const speed = metadata.modem?.spd || null
         isHidden.value = speed === null
         speedText.value = speed !== null ? speed.toString() : "0"
     }

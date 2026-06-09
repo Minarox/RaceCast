@@ -190,7 +190,7 @@
         latitude.value = metadata.modem?.lat?.toString() || ''
         longitude.value = metadata.modem?.lon?.toString() || ''
         altitude.value = metadata.modem?.alt ? `${metadata.modem.alt} mètre${metadata.modem.alt > 1 ? "s" : ''}` : ''
-        speed.value = metadata.modem?.spd ? `${metadata.modem.spd} km/h` : ''
+        speed.value = typeof metadata.modem?.spd === "number" ? `${metadata.modem.spd} km/h` : ''
         precision.value = metadata.modem?.hdop ? `${metadata.modem.hdop}${metadata.modem.sat ? ` (${metadata.modem.sat} satellite${metadata.modem.sat > 1 ? "s" : ""})` : ''}` : ''
     }
 

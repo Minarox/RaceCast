@@ -5,7 +5,7 @@
             @touchstart.passive="onTouchStart"
             @touchend.passive="onTouchEnd"
         >
-            <VideoPlayer :track="mainCamera" :label="mainLabel" />
+            <VideoPlayer :track="mainCamera" :label="mainLabel" enhance />
 
             <div v-if="mainCamera" class="scrim"></div>
 

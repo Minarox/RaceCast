@@ -72,6 +72,33 @@ while the viewer sits on it.
 Audio always plays from the live WebRTC track, including while the video is rewound; the receiver
 carries audio as separate per-microphone HLS streams and re-syncing them is out of scope.
 
+### FSR upscaling
+
+`src/assets/fsr.ts` is a two-pass WebGL2 pipeline (EASU upsample + RCAS contrast-adaptive sharpen)
+modelled on AMD FidelityFX Super Resolution 1.0. It is **off by default** and switched on per viewer
+in the settings sheet (`settings.fsr.enabled`).
+
+It changes which element plays the media, which is the one thing to keep straight in
+`VideoPlayer.vue`:
+
+- Off: the WebRTC track or the HLS source is attached to the visible `<video>`.
+- On: a hidden `<video>` receives it instead, WebGL renders into a detached canvas, and
+  `canvas.captureStream(30)` feeds the visible element — so native fullscreen, controls and mobile
+  playback keep working on the element the viewer sees.
+
+`media()` returns whichever element is really playing. **Everything that touches the stream —
+attaching, detaching, seeking — must go through it**, never through the `display` ref directly, or
+rewind seeking will silently act on the wrong element once FSR is on.
+
+Only the hero passes `enhance`; a WebGL2 context per thumbnail would cost more than it could show.
+Any initialisation failure (no WebGL2, a driver refusing the shaders) rolls back to direct playback
+rather than leaving a black surface. The module is dynamically imported, so viewers who leave it off
+never download it.
+
+RCAS reads sharpness as `0` = strongest … `2` = weakest. The stored value keeps that scale; only the
+settings slider is flipped so "further right" means sharper. Don't "fix" the inversion in one place
+without the other.
+
 ### Telemetry, and the channels that don't exist yet
 
 Room metadata carries `modem` (GPS + cellular) and `ups` (battery) — those are live. The design also

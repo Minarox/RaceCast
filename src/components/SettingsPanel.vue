@@ -39,6 +39,36 @@
                     <hr />
 
                     <section class="group">
+                        <span class="lab">image</span>
+
+                        <Toggle
+                            label="Amélioration d'image (FSR)"
+                            :on="settings.fsr.enabled"
+                            @change="setFSREnabled"
+                        />
+
+                        <label v-if="settings.fsr.enabled" class="row">
+                            <span>Netteté</span>
+                            <input
+                                class="slider"
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="5"
+                                :value="sharpnessPercent"
+                                @input="setSharpness"
+                            />
+                        </label>
+
+                        <span class="lab note">
+                            Rehausse l'image sur la caméra principale. Demande un GPU — à couper si
+                            la lecture saccade.
+                        </span>
+                    </section>
+
+                    <hr />
+
+                    <section class="group">
                         <span class="lab">différé</span>
 
                         <div class="row">
@@ -151,6 +181,22 @@
 
     function setMainCamera(event: globalThis.Event): void {
         update("mainCamera", Number((event.target as HTMLSelectElement).value))
+    }
+
+    /**
+     * RCAS reads sharpness as 0 = strongest … 2 = weakest, which is backwards
+     * for a slider. The stored value keeps the renderer's own scale; only the
+     * control is flipped, so "further right" means "sharper".
+     */
+    const sharpnessPercent = computed(() => Math.round(((2 - settings.value.fsr.sharpness) / 2) * 100))
+
+    function setFSREnabled(enabled: boolean): void {
+        update("fsr", { ...settings.value.fsr, enabled })
+    }
+
+    function setSharpness(event: globalThis.Event): void {
+        const percent = Number((event.target as HTMLInputElement).value)
+        update("fsr", { ...settings.value.fsr, sharpness: 2 - (percent / 100) * 2 })
     }
 
     function setVolume(event: globalThis.Event): void {
@@ -283,6 +329,13 @@
         justify-content: space-between;
         gap: 12px;
         font: 400 12.5px var(--font);
+    }
+
+    .note {
+        letter-spacing: 0.04em;
+        line-height: 1.5;
+        text-transform: none;
+        color: var(--text-5);
     }
 
     select {

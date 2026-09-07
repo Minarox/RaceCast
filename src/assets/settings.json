@@ -7,5 +7,9 @@
     "showMarkers": true,
     "volume": 0.64,
     "rememberVolumes": true,
-    "volumes": {}
+    "volumes": {},
+    "fsr": {
+        "enabled": false,
+        "sharpness": 1.0
+    }
 }

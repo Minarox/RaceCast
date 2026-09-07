@@ -258,7 +258,19 @@ export function getSettings(): Settings {
     try {
         const saved = window.localStorage.getItem("settings")
         if (!saved) return structuredClone(defaultSettings)
-        return { ...structuredClone(defaultSettings), ...JSON.parse(saved) }
+
+        const merged: any = { ...structuredClone(defaultSettings), ...JSON.parse(saved) }
+
+        // Nested groups (fsr, ...) are merged one level deeper too: a settings
+        // object written by an older version of the site can be missing a key
+        // inside one of them, and a plain spread would drop the default for it.
+        for (const [key, fallback] of Object.entries(defaultSettings)) {
+            if (fallback && typeof fallback === "object" && !Array.isArray(fallback)) {
+                merged[key] = { ...fallback, ...(merged[key] ?? {}) }
+            }
+        }
+
+        return merged as Settings
     } catch {
         return structuredClone(defaultSettings)
     }

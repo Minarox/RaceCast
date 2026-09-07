@@ -143,16 +143,20 @@ export const defaultPlayback: PlaybackState = {
 }
 
 /* ------------------------------------------------------------------ *
- * Replays — post-race recaps, stored as JSON in the STORE KV namespace
- * under the REPLAYS key and read by the getReplays action.
+ * Replays — the rally history, held in SQLite (see src/lib/db.ts) and
+ * edited from /admin.
  * ------------------------------------------------------------------ */
 
 export interface Stage {
+    /** Row id — present on anything read from the database. */
+    id?: number
     name: string
     time?: string | null
 }
 
 export interface Rally {
+    /** Row id — present on anything read from the database. */
+    id?: number
     name: string
     date: string
     stages?: Stage[]

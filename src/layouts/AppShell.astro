@@ -1,5 +1,5 @@
 ---
-import { actions } from "astro:actions"
+import { getSetting } from "@lib/db"
 import Nav from "@components/Nav.astro"
 import RewindBar from "@components/RewindBar.vue"
 import StatusBar from "@components/StatusBar.vue"
@@ -16,13 +16,17 @@ interface Props {
 const { path, rewind = false } = Astro.props
 
 /**
- * The "what's running now" label is edited in KV, so it is read per request
- * rather than baked in at build time. A KV outage must not take the page
- * down with it — an empty label simply hides the element.
+ * The "what's running now" label is edited from /admin during an event, so it
+ * is read per request rather than baked in at build time. A database problem
+ * must not take the whole page down with it — an empty label simply hides the
+ * element.
  */
-const stage = await Astro.callAction(actions.getStage, undefined)
-    .then(result => result.data ?? "")
-    .catch(() => "")
+let stage = ""
+try {
+    stage = getSetting("stage")
+} catch (cause) {
+    console.error("[shell] stage label unavailable:", cause)
+}
 ---
 
 <div class="shell">

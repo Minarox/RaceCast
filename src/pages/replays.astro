@@ -1,21 +1,25 @@
 ---
-import { actions } from "astro:actions"
 import Icon from "@components/Icon.astro"
 import Layout from "@layouts/Layout.astro"
 import AppShell from "@layouts/AppShell.astro"
 import type { Rally, Season } from "@types"
 import { shortDate } from "@lib/format"
+import { listSeasons } from "@lib/db"
 
 export const prerender = false
 
 /**
- * Replays are edited in KV and rendered entirely on the server — the page
- * ships no JavaScript of its own. Seasons after the first are collapsed with
- * a native <details>, so even the expand/collapse costs nothing.
+ * The rally history, edited from /admin and rendered entirely on the server —
+ * the page ships no JavaScript of its own. Seasons after the first are
+ * collapsed with a native <details>, so even the expand/collapse costs
+ * nothing.
  */
-const seasons: Season[] = await Astro.callAction(actions.getReplays, undefined)
-    .then(result => result.data ?? [])
-    .catch(() => [])
+let seasons: Season[] = []
+try {
+    seasons = listSeasons()
+} catch (cause) {
+    console.error("[replays] history unavailable:", cause)
+}
 
 /** "4 rallyes · 11 ES" */
 function summarise(season: Season): string {

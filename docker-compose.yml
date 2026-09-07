@@ -1,0 +1,37 @@
+services:
+    racecast:
+        build:
+            context: .
+            args:
+                # Inlined into the client bundle at build time — changing it
+                # means rebuilding the image, not just restarting it.
+                PUBLIC_REWIND_URL: ${PUBLIC_REWIND_URL:-}
+                SITE_URL: ${SITE_URL:-https://racecast.example.com}
+        image: racecast-front
+        container_name: racecast-front
+        restart: unless-stopped
+
+        environment:
+            PORT: 4321
+            SITE_URL: ${SITE_URL:-https://racecast.example.com}
+            DATABASE_PATH: /data/racecast.db
+
+            LIVEKIT_TLS: ${LIVEKIT_TLS:-true}
+            LIVEKIT_DOMAIN: ${LIVEKIT_DOMAIN}
+            LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
+            LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+            LIVEKIT_ROOM: ${LIVEKIT_ROOM}
+            LIVEKIT_PUBLISHER_IDENTITY: ${LIVEKIT_PUBLISHER_IDENTITY}
+
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+        # Published on localhost only: put it behind the reverse proxy that
+        # already terminates TLS rather than exposing the Node server directly.
+        ports:
+            - "127.0.0.1:4321:4321"
+
+        volumes:
+            - racecast-data:/data
+
+volumes:
+    racecast-data:

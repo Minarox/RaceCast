@@ -20,16 +20,22 @@ this site can change is local to the browser.
 ## Commands
 
 Package manager and scripts are in `package.json` (pnpm). Run `pnpm check` before considering a task
-done; never run `pnpm deploy` without asking — it publishes to Cloudflare.
+done. `pnpm build` then `pnpm start` runs the real server locally; deployment is
+`docker compose up -d --build` on the operator's own host.
 
 There is no test suite and no lint script configured. CI (`.github/workflows/build.yml`) runs
 `pnpm check` and `pnpm build` on every PR; `.github/workflows/secret.yml` runs TruffleHog scanning.
 
 ## Architecture
 
-**Stack**: Astro 6 with Vue 3 islands (`@astrojs/vue`), deployed to a Cloudflare Worker via
-`@astrojs/cloudflare` (static assets binding `ASSETS`, KV binding `STORE`). All three pages set
-`export const prerender = false` — they read editorial content from KV per request.
+**Stack**: Astro 6 with Vue 3 islands (`@astrojs/vue`), built as a standalone Node server via
+`@astrojs/node` and self-hosted behind the operator's own reverse proxy. Editable content lives in
+SQLite (`node:sqlite`, no server and no native module). Every page sets
+`export const prerender = false` — they read that content per request.
+
+The Node adapter major must track Astro's: `@astrojs/node@10.x` peers on Astro 6, `11.x` already
+requires Astro 7. Installing the newest one against Astro 6 builds fine and then dies at startup
+with `app.getLogger is not a function`.
 
 **Path aliases** (`tsconfig.json`): `@assets/*`, `@components/*`, `@layouts/*`, `@lib/*`, `@pages/*`,
 `@styles/*`, `@types` → `src/types.ts`.
@@ -111,9 +117,9 @@ fabricates a value. Do not "fix" the placeholders by inventing data.
 
 ### Icons
 
-`astro-icon` was removed deliberately: it pulls a CommonJS dependency into the SSR graph, which the
-Cloudflare Workers runtime cannot load (`module is not defined`) on any on-demand-rendered page —
-and every page here is one. Icons are inline SVG instead, from a generated path set:
+`astro-icon` was removed deliberately: it pulls a CommonJS dependency into the SSR graph that broke
+on-demand rendering (`module is not defined`), and every page here is on-demand rendered. Icons are
+inline SVG instead, from a generated path set:
 
 - `scripts/icons.mjs` (`pnpm icons`) extracts the needed Phosphor paths from `@iconify-json/ph`
   (a devDependency) into `src/assets/icons.ts`.
@@ -139,25 +145,47 @@ cameras and the map in a strip under the hero; phone stacks numbers and a full-w
 cameras by swiping). Both markups ship and CSS picks one — except the speed readout, which is chosen
 in JS so screen readers don't announce it twice.
 
-## Configuration
+## Editable content
 
-LiveKit settings are server-side (`.env` locally, Worker vars/secrets in production, read through
-`cloudflare:workers` `env` — not `import.meta.env`).
+Everything the pipeline cannot report about itself — the "rallye en cours" banner and the rally
+history — lives in SQLite and is edited from `/admin`. `src/lib/db.ts` owns the schema (created on
+first connection, no migration tool) and every query; pages call it directly rather than going
+through an action, since they are already rendering on the server.
 
-`PUBLIC_REWIND_URL` is different: it is read in the **browser**, so Astro inlines it at build time.
-It must be set in the environment that runs `pnpm build`, and the receiver must list this site's
-exact origin in its `RC_REWIND_HTTP_CORS_ORIGIN`. Empty ships the site with the rewind controls
-visibly disabled rather than present but broken.
+Synchronous by design: the database is a local file, each query touches a few dozen rows, and
+SQLite's own locking is all a single-instance server needs. WAL is on so a viewer loading
+`/replays` never blocks on the admin saving a stage time — which is exactly when both happen.
 
-## Editorial content (KV)
+`node:sqlite` prints an ExperimentalWarning on import; the container silences it with
+`NODE_OPTIONS=--no-warnings=ExperimentalWarning` rather than taking on a third-party driver for a
+few writes a day.
 
-Two keys in the `STORE` namespace, both read through Astro Actions in `src/actions/index.ts` and both
-degrading to empty rather than erroring:
+### /admin
 
-- `STAGE` — free text in the header, e.g. `ES 4 — Col de Turini`.
-- `REPLAYS` — JSON array of seasons (`Season` / `Rally` in `src/types.ts`). A rally with a
-  `thumbnail` renders as the featured card; one without renders compact. The "Télémétrie" button
-  only appears when a rally supplies a `telemetry` URL — there is no permanent telemetry archive in
-  the pipeline, so it cannot be derived.
+One shared password (`ADMIN_PASSWORD`) and a signed cookie — right-sized for a single operator
+editing times from the side of a stage, on a site whose content is public anyway. An unset password
+leaves the page unreachable rather than open, and changing it invalidates open sessions, since the
+cookie's HMAC is keyed on the password itself.
 
-Add new server-only logic as Actions here rather than as API routes.
+The page is **plain HTML forms posting to Astro Actions, with no client JavaScript**. That is
+deliberate: trackside the connection drops constantly, and a normal POST the browser can retry beats
+an in-page fetch that loses its payload. Each action re-checks the session itself — a hidden form is
+not access control — and the page does post/redirect/get so a reload never re-submits a save.
+
+Two things to know before touching the action schemas:
+
+- A form field left blank arrives as **`null`**, not `""` or `undefined`. `optionalText` accepts all
+  three; a plain `.optional()` rejects every empty input with "expected string".
+- Astro 6 names the form parameter `?_action=`, not `?_astroAction=`.
+
+Add new server-only logic as Actions in `src/actions/index.ts`.
+
+## Environment
+
+Declared in `astro.config.mjs` under `env.schema` and read through `astro:env`, not `import.meta.env`
+— server secrets are then looked up in `process.env` at runtime, so the image is built once without
+credentials and takes them from the environment at start.
+
+`PUBLIC_REWIND_URL` is the exception: it is read in the browser, so it is inlined at build time and
+must be present when `astro build` runs (a Docker build arg). Empty ships the site with the rewind
+controls visibly disabled rather than present but broken.

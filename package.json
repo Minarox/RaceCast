@@ -24,14 +24,13 @@
     "dev": "astro dev",
     "check": "astro check",
     "build": "astro build",
-    "preview": "astro build && wrangler dev",
+    "preview": "astro preview",
+    "start": "node --no-warnings=ExperimentalWarning dist/server/entry.mjs",
     "astro": "astro",
-    "deploy": "astro build && wrangler deploy",
-    "cf-typegen": "wrangler types",
     "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13.6.0",
+    "@astrojs/node": "^10.1.4",
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/vue": "^6.0.1",
     "@plausible-analytics/tracker": "^0.4.5",
@@ -48,8 +47,7 @@
   },
   "devDependencies": {
     "@iconify-json/ph": "^1.2.2",
-    "@types/node": "^25.9.1",
-    "wrangler": "^4.96.0"
+    "@types/node": "^25.9.1"
   },
   "packageManager": "pnpm@11.5.0"
 }

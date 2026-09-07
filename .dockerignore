@@ -1,0 +1,12 @@
+node_modules
+dist
+data
+.astro
+.git
+.github
+.vscode
+.devcontainer
+.env
+.env.*
+!.env.example
+*.md

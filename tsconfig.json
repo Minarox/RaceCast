@@ -14,6 +14,6 @@
             "@styles/*": ["./src/styles/*"],
             "@types": ["./src/types.ts"]
         },
-        "types": ["./worker-configuration.d.ts", "node"]
+        "types": ["node"]
     }
 }

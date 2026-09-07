@@ -13,9 +13,15 @@ interface Props {
     section?: string
     /** Mount the autoplay unblocker — only pages that play audio need it. */
     audio?: boolean
+    /**
+     * Open the LiveKit connection. On by default; /admin turns it off, since
+     * subscribing to the car's tracks to edit a form would burn bandwidth on
+     * exactly the connection the car is competing for.
+     */
+    connect?: boolean
 }
 
-const { section, audio = false } = Astro.props
+const { section, audio = false, connect = true } = Astro.props
 
 const name: string = "RaceCast"
 const title: string = section ? `${name} — ${section}` : name
@@ -96,8 +102,8 @@ const description: string = "Diffusion en direct de la voiture de course de Kevi
 
     <body>
         <slot />
-        <LiveKit />
-        {audio && <AudioTrigger />}
+        {connect && <LiveKit />}
+        {connect && audio && <AudioTrigger />}
         <Plausible />
     </body>
 </html>

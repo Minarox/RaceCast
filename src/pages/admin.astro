@@ -1,0 +1,460 @@
+---
+import { actions } from "astro:actions"
+import Layout from "@layouts/Layout.astro"
+import Icon from "@components/Icon.astro"
+import { adminConfigured, isAuthenticated } from "@lib/auth"
+import { getSetting, listSeasons } from "@lib/db"
+import type { Season } from "@types"
+
+export const prerender = false
+
+/**
+ * Trackside editor for everything the site shows that the pipeline cannot
+ * report by itself: the current stage banner, and the rally history.
+ *
+ * Deliberately plain HTML forms posting to Astro Actions — no client
+ * JavaScript at all. On a phone at the side of a special stage the connection
+ * drops constantly, and a normal POST that the browser can retry beats an
+ * in-page fetch that loses its payload. Every form posts, the page re-renders
+ * from the database, and what you see is what was stored.
+ */
+
+// Actions run before this frontmatter, so a successful login has already set
+// its cookie by the time we look.
+const results = [
+    Astro.getActionResult(actions.login),
+    Astro.getActionResult(actions.logout),
+    Astro.getActionResult(actions.setStage),
+    Astro.getActionResult(actions.createRally),
+    Astro.getActionResult(actions.updateRally),
+    Astro.getActionResult(actions.deleteRally),
+    Astro.getActionResult(actions.createStage),
+    Astro.getActionResult(actions.updateStage),
+    Astro.getActionResult(actions.deleteStage)
+]
+
+const called = results.find(result => result !== undefined)
+
+// Post/redirect/get: without this, reloading after a save would re-submit it.
+// The refreshed page showing the new value is the confirmation.
+if (called && !called.error) return Astro.redirect("/admin", 303)
+
+const error = called?.error?.message ?? ""
+const configured = adminConfigured()
+const authenticated = isAuthenticated(Astro.cookies)
+
+let stage = ""
+let seasons: Season[] = []
+if (authenticated) {
+    stage = getSetting("stage")
+    seasons = listSeasons()
+}
+
+const currentYear = String(new Date().getFullYear())
+const today = new Date().toISOString().slice(0, 10)
+---
+
+<Layout section="Administration" connect={false}>
+    <main class="admin">
+        {
+            !configured ? (
+                <section class="card notice">
+                    <h1>Administration indisponible</h1>
+                    <p>
+                        La variable d'environnement <code>ADMIN_PASSWORD</code> n'est pas définie.
+                        Renseigne-la puis redémarre le service pour activer cette page.
+                    </p>
+                </section>
+            ) : !authenticated ? (
+                <section class="card login">
+                    <h1>Administration</h1>
+                    {error && <p class="error">{error}</p>}
+                    <form method="POST" action={actions.login}>
+                        <label>
+                            <span class="lab">mot de passe</span>
+                            <input type="password" name="password" autocomplete="current-password" required />
+                        </label>
+                        <button class="primary" type="submit">Se connecter</button>
+                    </form>
+                </section>
+            ) : (
+                <>
+                    <header class="top">
+                        <div class="titles">
+                            <h1>Administration</h1>
+                            <a href="/">← Retour au direct</a>
+                        </div>
+                        <form method="POST" action={actions.logout}>
+                            <button type="submit">Se déconnecter</button>
+                        </form>
+                    </header>
+
+                    {error && <p class="error">{error}</p>}
+
+                    <section class="card">
+                        <h2>Rallye en cours</h2>
+                        <p class="hint">
+                            Affiché dans l'en-tête du site. Laisser vide pour masquer la mention.
+                        </p>
+                        <form method="POST" action={actions.setStage} class="inline">
+                            <input
+                                type="text"
+                                name="stage"
+                                value={stage}
+                                placeholder="ES 4 — Col de Turini"
+                                maxlength="120"
+                            />
+                            <button class="primary" type="submit">Enregistrer</button>
+                        </form>
+                    </section>
+
+                    <section class="card">
+                        <h2>Nouveau rallye</h2>
+                        <form method="POST" action={actions.createRally} class="grid">
+                            <label>
+                                <span class="lab">saison</span>
+                                <input type="text" name="season" value={currentYear} required />
+                            </label>
+                            <label>
+                                <span class="lab">nom</span>
+                                <input type="text" name="name" placeholder="Rallye du Var" required />
+                            </label>
+                            <label>
+                                <span class="lab">date</span>
+                                <input type="date" name="date" value={today} required />
+                            </label>
+                            <label>
+                                <span class="lab">résumé</span>
+                                <input type="text" name="summary" placeholder="3 ES · 14e au général" />
+                            </label>
+                            <label class="wide">
+                                <span class="lab">lien replay (youtube)</span>
+                                <input type="url" name="replay" placeholder="https://youtu.be/..." />
+                            </label>
+                            <label class="wide">
+                                <span class="lab">miniature (url)</span>
+                                <input type="url" name="thumbnail" placeholder="https://..." />
+                            </label>
+                            <label>
+                                <span class="lab">durée</span>
+                                <input type="text" name="duration" placeholder="1:24:06" />
+                            </label>
+                            <label>
+                                <span class="lab">lien télémétrie</span>
+                                <input type="url" name="telemetry" placeholder="https://..." />
+                            </label>
+                            <div class="actions wide">
+                                <button class="primary" type="submit">Créer</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    {seasons.length === 0 && <p class="empty">Aucun rallye enregistré.</p>}
+
+                    {
+                        seasons.map(season => (
+                            <section class="season">
+                                <h2>{season.year}</h2>
+
+                                {season.rallies.map(rally => (
+                                    <article class="card rally">
+                                        <form method="POST" action={actions.updateRally} class="grid">
+                                            <input type="hidden" name="id" value={rally.id} />
+                                            <label>
+                                                <span class="lab">saison</span>
+                                                <input type="text" name="season" value={season.year} required />
+                                            </label>
+                                            <label>
+                                                <span class="lab">nom</span>
+                                                <input type="text" name="name" value={rally.name} required />
+                                            </label>
+                                            <label>
+                                                <span class="lab">date</span>
+                                                <input type="date" name="date" value={rally.date?.slice(0, 10)} required />
+                                            </label>
+                                            <label>
+                                                <span class="lab">résumé</span>
+                                                <input type="text" name="summary" value={rally.summary ?? ""} />
+                                            </label>
+                                            <label class="wide">
+                                                <span class="lab">lien replay (youtube)</span>
+                                                <input type="url" name="replay" value={rally.replay ?? ""} />
+                                            </label>
+                                            <label class="wide">
+                                                <span class="lab">miniature (url)</span>
+                                                <input type="url" name="thumbnail" value={rally.thumbnail ?? ""} />
+                                            </label>
+                                            <label>
+                                                <span class="lab">durée</span>
+                                                <input type="text" name="duration" value={rally.duration ?? ""} />
+                                            </label>
+                                            <label>
+                                                <span class="lab">lien télémétrie</span>
+                                                <input type="url" name="telemetry" value={rally.telemetry ?? ""} />
+                                            </label>
+                                            <div class="actions wide">
+                                                <button class="primary" type="submit">Enregistrer</button>
+                                            </div>
+                                        </form>
+
+                                        <div class="stages">
+                                            <span class="lab">spéciales</span>
+
+                                            {(rally.stages ?? []).map(stage => (
+                                                <div class="stage-row">
+                                                    <form method="POST" action={actions.updateStage} class="inline">
+                                                        <input type="hidden" name="id" value={stage.id} />
+                                                        <input type="text" name="name" value={stage.name} required />
+                                                        <input
+                                                            type="text"
+                                                            name="time"
+                                                            value={stage.time ?? ""}
+                                                            placeholder="08:42.3"
+                                                            class="time"
+                                                        />
+                                                        <button type="submit">OK</button>
+                                                    </form>
+                                                    <form method="POST" action={actions.deleteStage}>
+                                                        <input type="hidden" name="id" value={stage.id} />
+                                                        <button type="submit" class="danger" aria-label="Supprimer l'ES">
+                                                            <Icon name="x" size={14} />
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            ))}
+
+                                            <form method="POST" action={actions.createStage} class="inline">
+                                                <input type="hidden" name="rally" value={rally.id} />
+                                                <input type="text" name="name" placeholder="ES1 — Le Luc" required />
+                                                <input type="text" name="time" placeholder="08:42.3" class="time" />
+                                                <button class="primary" type="submit">Ajouter</button>
+                                            </form>
+                                        </div>
+
+                                        <form
+                                            method="POST"
+                                            action={actions.deleteRally}
+                                            class="delete"
+                                        >
+                                            <input type="hidden" name="id" value={rally.id} />
+                                            <button type="submit" class="danger">Supprimer ce rallye</button>
+                                        </form>
+                                    </article>
+                                ))}
+                            </section>
+                        ))
+                    }
+                </>
+            )
+        }
+    </main>
+</Layout>
+
+<style>
+    .admin {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    h1 {
+        font: 500 20px var(--font);
+    }
+
+    h2 {
+        font: 500 15px var(--font);
+    }
+
+    .top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .titles {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .titles a {
+        font: 400 12px var(--font);
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--surface-2);
+        box-shadow: inset 0 0 0 1px var(--line-2);
+    }
+
+    .notice p,
+    .hint {
+        font: 400 12.5px/1.6 var(--font);
+        color: var(--text-4);
+    }
+
+    code {
+        font-family: var(--font-mono);
+        color: var(--accent-soft);
+    }
+
+    .login {
+        max-width: 380px;
+        width: 100%;
+        margin: 10vh auto 0;
+    }
+
+    .login form,
+    .grid {
+        display: grid;
+        gap: 12px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .wide {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    input {
+        width: 100%;
+        padding: 9px 11px;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--line-5);
+        background: var(--bg);
+        color: var(--text);
+        font: 400 13px var(--font);
+    }
+
+    input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+        border-color: transparent;
+    }
+
+    button {
+        padding: 9px 14px;
+        border-radius: var(--r-sm);
+        font: 500 12px var(--font);
+        color: var(--text-3);
+        box-shadow: inset 0 0 0 1px var(--line-5);
+        white-space: nowrap;
+    }
+
+    button:hover {
+        color: var(--text);
+    }
+
+    button.primary {
+        color: var(--accent-soft);
+        background: var(--accent-fill);
+        box-shadow: inset 0 0 0 1px var(--accent-line);
+    }
+
+    button.danger {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #e0919a;
+        box-shadow: inset 0 0 0 1px #5c3540;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .inline {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .inline input {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .inline input.time {
+        flex: 0 0 110px;
+        min-width: 90px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .error {
+        padding: 10px 12px;
+        border-radius: var(--r-sm);
+        font: 400 12.5px var(--font);
+        color: #e0919a;
+        background: rgba(224, 145, 154, 0.08);
+        box-shadow: inset 0 0 0 1px #5c3540;
+    }
+
+    .empty {
+        padding: 24px 0;
+        text-align: center;
+        font: 400 13px var(--font);
+        color: var(--text-5);
+    }
+
+    .season {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .rally {
+        gap: 16px;
+    }
+
+    .stages {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line-2);
+    }
+
+    .stage-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .stage-row > .inline {
+        flex: 1;
+    }
+
+    .delete {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 12px;
+        border-top: 1px solid var(--line-2);
+    }
+
+    @media (max-width: 620px) {
+        .grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+</style>

@@ -13,10 +13,11 @@
  * the car's state, so neither does this client.
  */
 
+import { PUBLIC_REWIND_URL } from "astro:env/client"
 import type { RewindStream } from "@types"
 
 /** Base URL of the receiver's rewind API, e.g. https://rewind.example.com */
-export const REWIND_URL: string = (import.meta.env.PUBLIC_REWIND_URL ?? "").replace(/\/+$/, "")
+export const REWIND_URL: string = (PUBLIC_REWIND_URL ?? "").replace(/\/+$/, "")
 
 export const rewindEnabled: boolean = REWIND_URL.length > 0
 

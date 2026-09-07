@@ -1,0 +1,13 @@
+---
+import Layout from "@layouts/Layout.astro"
+import AppShell from "@layouts/AppShell.astro"
+import TelemetryView from "@components/TelemetryView.vue"
+
+export const prerender = false
+---
+
+<Layout section="Télémétrie" audio>
+    <AppShell path="/telemetrie">
+        <TelemetryView client:load />
+    </AppShell>
+</Layout>

@@ -1,0 +1,37 @@
+---
+import Layout from "@layouts/Layout.astro"
+import AppShell from "@layouts/AppShell.astro"
+import LiveView from "@components/LiveView.vue"
+import TelemetrySidebar from "@components/TelemetrySidebar.vue"
+
+// Rendered per request: AppShell reads the current stage label from KV.
+export const prerender = false
+---
+
+<Layout audio>
+    <AppShell path="/" rewind>
+        <div class="live-page">
+            <LiveView client:load />
+            <TelemetrySidebar client:visible />
+        </div>
+    </AppShell>
+</Layout>
+
+<style>
+    .live-page {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
+
+    /*
+     * The telemetry sidebar needs real width to stay readable; below this it
+     * would squeeze the picture more than it helps, and the same numbers are
+     * one tap away on the Télémétrie tab.
+     */
+    @media (max-width: 1100px) {
+        .live-page :global(.sidebar) {
+            display: none;
+        }
+    }
+</style>

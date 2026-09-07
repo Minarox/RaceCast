@@ -1,0 +1,175 @@
+---
+/**
+ * The single LiveKit connection for the whole site.
+ *
+ * Mounted once by Layout.astro (so it exists on every page) and renders
+ * nothing: it owns the Room, and publishes everything it learns —
+ * connection state, track publications, viewer count, car telemetry — as
+ * `document`-level CustomEvents. Components subscribe to those instead of
+ * receiving props, which is what lets Vue islands on different pages share
+ * one connection without a store or a provider.
+ *
+ * Islands hydrate at unpredictable times and routinely mount *after* an
+ * event was emitted, so every consumer asks for the current value on mount
+ * with `Event.RESEND`; the handler below re-emits from the cached copy.
+ */
+---
+
+<script>
+    import { RemoteParticipant, RemoteTrackPublication, Room, RoomEvent, Track } from "livekit-client"
+    import { Event, State, type Metadata, defaultMetadata, dispatchEvent } from "@types"
+    import { actions } from "astro:actions"
+
+    let nbViewers: number = 0
+    let cameras: RemoteTrackPublication[] = []
+    let microphones: RemoteTrackPublication[] = []
+    let localStatus: State = State.DISCONNECTED
+    let remoteStatus: State = State.DISCONNECTED
+    let metadata: Metadata = defaultMetadata
+    let room: Room | undefined = undefined
+
+    document.addEventListener(Event.RESEND, (event: any): void => {
+        switch (event.detail) {
+            case Event.VIEWERS:
+                dispatchEvent(Event.VIEWERS, nbViewers)
+                break
+            case Event.CAMERAS:
+                dispatchEvent(Event.CAMERAS, cameras)
+                break
+            case Event.MICROPHONES:
+                dispatchEvent(Event.MICROPHONES, microphones)
+                break
+            case Event.LOCAL_STATUS:
+                dispatchEvent(Event.LOCAL_STATUS, localStatus)
+                break
+            case Event.REMOTE_STATUS:
+                dispatchEvent(Event.REMOTE_STATUS, remoteStatus)
+                break
+            case Event.METADATA:
+                dispatchEvent(Event.METADATA, metadata)
+                break
+        }
+    })
+
+    document.addEventListener(Event.CONNECT, (): void => {
+        if (localStatus === State.DISCONNECTED) setTimeout(() => connect())
+    })
+
+    /**
+     * Orders tracks so the view the audience most wants comes first: the
+     * road-facing camera, then the race radio. The rest is alphabetical so
+     * the order is stable across reconnects (LiveKit does not guarantee
+     * publication order).
+     */
+    function ordered(tracks: RemoteTrackPublication[], first: string): RemoteTrackPublication[] {
+        return tracks.sort((a: any, b: any) => {
+            const nameA: string = a?.trackInfo?.name ?? ""
+            const nameB: string = b?.trackInfo?.name ?? ""
+
+            if (nameA === first && nameB !== first) return -1
+            if (nameB === first && nameA !== first) return 1
+
+            return nameA.localeCompare(nameB)
+        })
+    }
+
+    function getEmitterTracks(participant: RemoteParticipant): void {
+        const tracks = Array.from(participant.trackPublications.values())
+
+        cameras = ordered(tracks.filter(t => t.kind === Track.Kind.Video), "Route")
+        dispatchEvent(Event.CAMERAS, cameras)
+
+        microphones = ordered(tracks.filter(t => t.kind === Track.Kind.Audio), "Radio")
+        dispatchEvent(Event.MICROPHONES, microphones)
+    }
+
+    function clearTracks(): void {
+        cameras = []
+        microphones = []
+        dispatchEvent(Event.CAMERAS, cameras)
+        dispatchEvent(Event.MICROPHONES, microphones)
+    }
+
+    async function connect(): Promise<void> {
+        const livekit = await actions.getLiveKitToken.orThrow()
+
+        room = new Room({
+            reconnectPolicy: {
+                nextRetryDelayInMs: () => 1000
+            }
+        })
+
+        room.prepareConnection(`wss://${livekit.domain}`, livekit.token)
+
+        room
+            .on(RoomEvent.ConnectionStateChanged, (state: string): void => {
+                localStatus = state as State
+                dispatchEvent(Event.LOCAL_STATUS, localStatus)
+
+                if (localStatus === State.DISCONNECTED) {
+                    room = undefined
+                    nbViewers = 0
+                    dispatchEvent(Event.VIEWERS, nbViewers)
+                    clearTracks()
+                    setTimeout(() => connect())
+                }
+            })
+            .on(RoomEvent.RoomMetadataChanged, (data: string): void => {
+                metadata = data ? JSON.parse(data) : defaultMetadata
+                dispatchEvent(Event.METADATA, metadata)
+            })
+            .on(RoomEvent.ParticipantConnected, (participant): void => {
+                if (participant.identity === livekit.publisherIdentity) {
+                    getEmitterTracks(participant)
+                    remoteStatus = State.CONNECTED
+                    dispatchEvent(Event.REMOTE_STATUS, remoteStatus)
+                } else {
+                    nbViewers++
+                    dispatchEvent(Event.VIEWERS, nbViewers)
+                }
+            })
+            .on(RoomEvent.ParticipantDisconnected, (participant): void => {
+                if (participant.identity === livekit.publisherIdentity) {
+                    remoteStatus = State.DISCONNECTED
+                    dispatchEvent(Event.REMOTE_STATUS, remoteStatus)
+                    clearTracks()
+                } else {
+                    nbViewers--
+                    dispatchEvent(Event.VIEWERS, nbViewers)
+                }
+            })
+            .on(RoomEvent.TrackPublished, (_, participant): void => {
+                getEmitterTracks(participant)
+            })
+            .on(RoomEvent.TrackUnpublished, (_, participant): void => {
+                getEmitterTracks(participant)
+            })
+            .on(RoomEvent.AudioPlaybackStatusChanged, (playing: boolean): void => {
+                if (!playing) dispatchEvent(Event.NEED_USER_INTERACTION)
+            })
+
+        await room.connect(`wss://${livekit.domain}`, livekit.token)
+
+        metadata = room.metadata ? JSON.parse(room.metadata) : defaultMetadata
+        dispatchEvent(Event.METADATA, metadata)
+
+        const emitter: RemoteParticipant | undefined = room.remoteParticipants.get(livekit.publisherIdentity)
+        remoteStatus = emitter ? State.CONNECTED : State.DISCONNECTED
+        dispatchEvent(Event.REMOTE_STATUS, remoteStatus)
+
+        // Every remote participant except the car is a viewer; +1 for us.
+        nbViewers = room.remoteParticipants.size + (emitter ? 0 : 1)
+        dispatchEvent(Event.VIEWERS, nbViewers)
+
+        if (emitter) getEmitterTracks(emitter)
+        else clearTracks()
+    }
+
+    // The browser will not play audio before a user gesture; AudioTrigger
+    // asks for one and this resumes the room's audio context afterwards.
+    document.addEventListener(Event.RESUME_AUDIO, (): void => {
+        room?.startAudio()
+    })
+
+    connect()
+</script>

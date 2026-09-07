@@ -1,0 +1,38 @@
+---
+import { icons, VIEW_BOX, type IconName } from "@assets/icons"
+
+/**
+ * Server-rendered inline icon — the Astro counterpart of Icon.vue, drawing
+ * from the same generated Phosphor path set (see scripts/icons.mjs).
+ *
+ * This replaces astro-icon deliberately: that package pulls a CommonJS
+ * dependency into the SSR graph, which the Cloudflare Workers runtime cannot
+ * load ("module is not defined") on any on-demand-rendered page. Inlining the
+ * handful of paths this UI uses also means no icon runtime ships at all.
+ */
+interface Props {
+    name: IconName
+    size?: number
+    class?: string
+}
+
+const { name, size = 16, class: className } = Astro.props
+---
+
+<svg
+    class={className}
+    viewBox={VIEW_BOX}
+    width={size}
+    height={size}
+    fill="currentColor"
+    aria-hidden="true"
+    focusable="false"
+    set:html={icons[name]}
+/>
+
+<style>
+    svg {
+        display: block;
+        flex: none;
+    }
+</style>

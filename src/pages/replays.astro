@@ -1,0 +1,348 @@
+---
+import { actions } from "astro:actions"
+import Icon from "@components/Icon.astro"
+import Layout from "@layouts/Layout.astro"
+import AppShell from "@layouts/AppShell.astro"
+import type { Rally, Season } from "@types"
+import { shortDate } from "@lib/format"
+
+export const prerender = false
+
+/**
+ * Replays are edited in KV and rendered entirely on the server — the page
+ * ships no JavaScript of its own. Seasons after the first are collapsed with
+ * a native <details>, so even the expand/collapse costs nothing.
+ */
+const seasons: Season[] = await Astro.callAction(actions.getReplays, undefined)
+    .then(result => result.data ?? [])
+    .catch(() => [])
+
+/** "4 rallyes · 11 ES" */
+function summarise(season: Season): string {
+    const rallies = season.rallies?.length ?? 0
+    const stages = (season.rallies ?? []).reduce((total, rally) => total + (rally.stages?.length ?? 0), 0)
+
+    const parts = [`${rallies} rallye${rallies > 1 ? "s" : ""}`]
+    if (stages) parts.push(`${stages} ES`)
+
+    return parts.join(" · ")
+}
+
+/** A rally is featured when it has artwork to feature. */
+function isFeatured(rally: Rally): boolean {
+    return Boolean(rally.thumbnail)
+}
+---
+
+<Layout section="Replays">
+    <AppShell path="/replays">
+        <div class="replays">
+            {
+                seasons.length === 0 && (
+                    <p class="empty">Aucun replay pour le moment.</p>
+                )
+            }
+
+            {
+                seasons.map((season, index) => (
+                    <details class="season" open={index === 0}>
+                        <summary>
+                            <span class="year">{season.year}</span>
+                            <span class="num lab count">{season.label ?? summarise(season)}</span>
+                            <Icon name="caret-down" size={14} class="chevron" />
+                        </summary>
+
+                        <div class="timeline">
+                            {
+                                (season.rallies ?? []).map(rally => (
+                                    <article class:list={["rally", { featured: isFeatured(rally) }]}>
+                                        <span class:list={["bullet", { on: Boolean(rally.replay) }]} />
+
+                                        {
+                                            isFeatured(rally) && (
+                                                <a
+                                                    class="poster"
+                                                    href={rally.replay ?? undefined}
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    aria-label={`Voir le replay — ${rally.name}`}
+                                                >
+                                                    <img src={rally.thumbnail} alt="" loading="lazy" decoding="async" />
+                                                    <span class="scrim" />
+                                                    <span class="play">
+                                                        <Icon name="play-fill" size={17} />
+                                                    </span>
+                                                    {rally.duration && <span class="duration num">{rally.duration}</span>}
+                                                </a>
+                                            )
+                                        }
+
+                                        <div class="body">
+                                            <div class="head">
+                                                <span class="name">{rally.name}</span>
+                                                <span class="num lab date">{shortDate(rally.date)}</span>
+                                            </div>
+
+                                            {
+                                                rally.stages && rally.stages.length > 0 && (
+                                                    <div class="stages">
+                                                        {rally.stages.map(stage => (
+                                                            <div class="stage">
+                                                                <span>{stage.name}</span>
+                                                                <span class="num">{stage.time ?? "—"}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )
+                                            }
+
+                                            {rally.summary && <p class="summary">{rally.summary}</p>}
+
+                                            <div class="actions">
+                                                {
+                                                    rally.replay ? (
+                                                        <a class="button primary" href={rally.replay} target="_blank" rel="noopener">
+                                                            <Icon name="youtube-logo" size={14} />
+                                                            Voir le replay
+                                                        </a>
+                                                    ) : (
+                                                        <span class="lab none">pas de replay</span>
+                                                    )
+                                                }
+
+                                                {
+                                                    rally.telemetry && (
+                                                        <a class="button" href={rally.telemetry} target="_blank" rel="noopener">
+                                                            <Icon name="gauge" size={14} />
+                                                            Télémétrie
+                                                        </a>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))
+                            }
+                        </div>
+                    </details>
+                ))
+            }
+        </div>
+    </AppShell>
+</Layout>
+
+<style>
+    .replays {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 18px 16px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .empty {
+        padding: 32px 0;
+        text-align: center;
+        font: 400 13px var(--font);
+        color: var(--text-5);
+    }
+
+    summary {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding-bottom: 14px;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .year {
+        font: 500 22px/1 var(--font);
+        letter-spacing: -0.01em;
+    }
+
+    .season:not([open]) .year {
+        color: var(--text-5);
+    }
+
+    .count {
+        letter-spacing: 0.06em;
+        color: var(--text-4);
+    }
+
+    .chevron {
+        margin-left: auto;
+        color: var(--text-5);
+        transition: transform 0.15s ease;
+    }
+
+    .season[open] .chevron {
+        transform: rotate(180deg);
+    }
+
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding-left: 17px;
+        border-left: 1px solid var(--line-3);
+    }
+
+    .rally {
+        position: relative;
+        border-radius: 11px;
+        background: var(--surface-2);
+        box-shadow: inset 0 0 0 1px var(--line-2);
+        overflow: hidden;
+    }
+
+    .rally.featured {
+        box-shadow: inset 0 0 0 1px var(--line-4);
+    }
+
+    .bullet {
+        position: absolute;
+        left: -21px;
+        top: 17px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-6);
+    }
+
+    .bullet.on {
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .poster {
+        position: relative;
+        display: block;
+        aspect-ratio: 16 / 9;
+        background: var(--surface-3);
+    }
+
+    .poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .poster .scrim {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(14, 16, 24, 0.7), rgba(14, 16, 24, 0) 55%);
+    }
+
+    .play {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        color: var(--text);
+        background: rgba(14, 16, 24, 0.6);
+        backdrop-filter: blur(8px);
+        box-shadow: inset 0 0 0 1px rgba(233, 233, 237, 0.2);
+    }
+
+    .duration {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        padding: 4px 7px;
+        border-radius: var(--r-xs);
+        font: 500 10px var(--font-mono);
+        color: var(--text-2);
+        background: rgba(14, 16, 24, 0.72);
+    }
+
+    .body {
+        padding: 13px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .name {
+        font: 500 14px var(--font);
+    }
+
+    .date {
+        letter-spacing: 0.06em;
+        color: var(--text-4);
+    }
+
+    .stages {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .stage {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font: 400 12px var(--font);
+        color: var(--text-4);
+    }
+
+    .stage .num {
+        color: var(--text);
+    }
+
+    .summary {
+        font: 400 12px var(--font);
+        color: var(--text-4);
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 2px;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 7px;
+        font: 500 11.5px var(--font);
+        color: var(--text-3);
+        box-shadow: inset 0 0 0 1px var(--line-5);
+    }
+
+    .button.primary {
+        color: var(--accent-soft);
+        box-shadow: inset 0 0 0 1px var(--accent-line);
+    }
+
+    .none {
+        letter-spacing: 0.06em;
+        color: var(--text-5);
+    }
+</style>

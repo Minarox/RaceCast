@@ -1,0 +1,25 @@
+{
+   "name": "RaceCast-Front",
+   "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+   "features": {
+      "ghcr.io/devcontainers/features/git-lfs:1": {},
+      "ghcr.io/devcontainers-extra/features/pnpm:2": {},
+      "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+        "packages": "gnupg2"
+    }
+   },
+   "remoteUser": "node",
+   "runArgs": [
+      "--name",
+      "racecast_front"
+   ],
+   "postStartCommand": "pnpm install",
+   "forwardPorts": [4321],
+   "customizations": {
+      "vscode": {
+         "extensions": [
+            "astro-build.astro-vscode"
+         ]
+      }
+   }
+}

@@ -1,0 +1,212 @@
+---
+import Icon from "@components/Icon.astro"
+import type { IconName } from "@assets/icons"
+
+interface Props {
+    /** Which tab is current — matched against each entry's href. */
+    path: string
+    /** Free-text "what's running now" label, from the STAGE KV key. */
+    stage?: string
+}
+
+const { path, stage } = Astro.props
+
+const tabs: Array<{ href: string; label: string; short: string; icon: IconName }> = [
+    { href: "/", label: "Live", short: "Live", icon: "broadcast" },
+    { href: "/telemetrie", label: "Télémétrie", short: "Télé.", icon: "gauge" },
+    { href: "/replays", label: "Replays", short: "Replays", icon: "film-slate" }
+]
+---
+
+<header class="nav">
+    <div class="left">
+        <a class="brand" href="/" aria-label="RaceCast — accueil">
+            <span class="mark"></span>
+            <span class="wordmark">RACECAST</span>
+        </a>
+
+        <nav class="tabs" aria-label="Sections">
+            {
+                tabs.map(tab => (
+                    <a href={tab.href} class:list={["tab", { active: tab.href === path }]}
+                        aria-current={tab.href === path ? "page" : undefined}>
+                        <Icon name={tab.icon} size={14} />
+                        <span class="long">{tab.label}</span>
+                        <span class="short">{tab.short}</span>
+                    </a>
+                ))
+            }
+        </nav>
+    </div>
+
+    <div class="right">
+        {stage && <span class="stage">{stage}</span>}
+        <span class="divider"></span>
+        <span class="viewers" title="Spectateurs">
+            <Icon name="users" size={15} />
+            <span class="num" id="nav-viewers">—</span>
+        </span>
+        <button id="nav-settings" type="button" aria-label="Réglages">
+            <Icon name="gear-six" size={17} />
+        </button>
+    </div>
+</header>
+
+<script>
+    import { Event, dispatchEvent } from "@types"
+
+    const viewers = document.getElementById("nav-viewers")!
+
+    document.addEventListener(Event.VIEWERS, (event: any): void => {
+        const count = event.detail as number
+        viewers.textContent = Number.isFinite(count) && count > 0 ? String(count) : "—"
+    })
+
+    document.getElementById("nav-settings")!.addEventListener("click", (): void => {
+        dispatchEvent(Event.SHOW_SETTINGS)
+    })
+
+    dispatchEvent(Event.RESEND, Event.VIEWERS)
+</script>
+
+<style>
+    .nav {
+        flex: none;
+        height: calc(var(--nav-h) + var(--safe-top));
+        padding: var(--safe-top) 18px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(22, 24, 38, 0.6);
+    }
+
+    .left {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        min-width: 0;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text);
+    }
+
+    .mark {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .wordmark {
+        font: 600 12.5px var(--font);
+        letter-spacing: 0.16em;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border-radius: var(--r-md);
+        background: var(--surface-3);
+        box-shadow: inset 0 0 0 1px var(--line-2);
+    }
+
+    .tab {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 13px;
+        border-radius: var(--r-sm);
+        font: 400 12px var(--font);
+        color: var(--text-4);
+        white-space: nowrap;
+    }
+
+    .tab:hover {
+        color: var(--text-2);
+    }
+
+    .tab.active {
+        font-weight: 500;
+        color: var(--accent-soft);
+        background: var(--accent-fill);
+        box-shadow: inset 0 0 0 1px var(--accent-line);
+    }
+
+    .tab .short {
+        display: none;
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--text-3);
+        font: 400 12px var(--font);
+    }
+
+    .stage {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 34vw;
+    }
+
+    .divider {
+        width: 1px;
+        height: 18px;
+        background: var(--line-2);
+    }
+
+    .viewers {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    #nav-settings {
+        display: flex;
+        color: var(--text-4);
+        font-size: 17px;
+    }
+
+    #nav-settings:hover {
+        color: var(--text-2);
+    }
+
+    @media (max-width: 768px) {
+        .nav {
+            padding-inline: 16px;
+        }
+
+        .left {
+            flex: 1;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .tab {
+            padding: 6px 11px;
+            font-size: 11px;
+        }
+
+        .tab svg,
+        .tab .long,
+        .stage,
+        .divider,
+        .viewers {
+            display: none;
+        }
+
+        .tab .short {
+            display: inline;
+        }
+    }
+</style>

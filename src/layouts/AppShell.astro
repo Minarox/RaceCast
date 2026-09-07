@@ -1,0 +1,80 @@
+---
+import { actions } from "astro:actions"
+import Nav from "@components/Nav.astro"
+import RewindBar from "@components/RewindBar.vue"
+import StatusBar from "@components/StatusBar.vue"
+import AudioDrawer from "@components/AudioDrawer.vue"
+import SettingsPanel from "@components/SettingsPanel.vue"
+
+interface Props {
+    /** Current route, used to mark the active nav tab. */
+    path: string
+    /** Show the rewind scrubber — only meaningful on the live page. */
+    rewind?: boolean
+}
+
+const { path, rewind = false } = Astro.props
+
+/**
+ * The "what's running now" label is edited in KV, so it is read per request
+ * rather than baked in at build time. A KV outage must not take the page
+ * down with it — an empty label simply hides the element.
+ */
+const stage = await Astro.callAction(actions.getStage, undefined)
+    .then(result => result.data ?? "")
+    .catch(() => "")
+---
+
+<div class="shell">
+    <Nav path={path} stage={stage} />
+
+    <main>
+        <slot />
+    </main>
+
+    {rewind && <RewindBar client:idle />}
+    <StatusBar client:idle />
+
+    <AudioDrawer client:idle />
+    <SettingsPanel client:idle />
+</div>
+
+<style>
+    .shell {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    main {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /*
+     * Fullscreen (design 07): the picture takes the whole screen and the
+     * chrome floats over it instead of taking layout space. The nav goes
+     * entirely — the tabs are not what someone watching fullscreen wants.
+     */
+    :global(html:fullscreen) .shell :global(header.nav) {
+        display: none;
+    }
+
+    :global(html:fullscreen) main {
+        position: absolute;
+        inset: 0;
+    }
+
+    :global(html:fullscreen) .shell :global(.rewind),
+    :global(html:fullscreen) .shell :global(.status) {
+        position: relative;
+        z-index: 10;
+        border-top: 0;
+        background: linear-gradient(to top, rgba(14, 16, 24, 0.9), rgba(14, 16, 24, 0.55));
+        backdrop-filter: blur(10px);
+    }
+</style>

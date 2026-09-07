@@ -1,0 +1,11 @@
+{
+    "mainCamera": 0,
+    "showOtherCameras": true,
+    "showSpeed": true,
+    "showMap": true,
+    "bufferSeconds": 600,
+    "showMarkers": true,
+    "volume": 0.64,
+    "rememberVolumes": true,
+    "volumes": {}
+}
